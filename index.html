@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Proyecto nubes de puntos</title>
 
-    <!-- Fuente moderna (opcional) -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 
     <!-- SageCell -->
     <script src="https://sagecell.sagemath.org/static/jquery.min.js"></script>
@@ -198,7 +199,90 @@
     margin-bottom: 4px;
   }
 
-  /* Tarjetas específicamente de applet (pones class="card card--applet") */
+
+  .intro-card {
+    margin-bottom: 32px;
+  }
+
+  /* === Teoría desplegable ==================================== */
+
+  .theory-card {
+    padding: 0;              
+    overflow: hidden;
+  }
+
+  .theory-details {
+    border-radius: var(--radius-lg);
+  }
+
+  .theory-summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .theory-details[open] .theory-summary {
+    border-bottom: 1px solid var(--border-card);
+    background: radial-gradient(circle at top left,
+                rgba(148,163,184,0.18), transparent 60%);
+  }
+
+  .theory-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .theory-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--accent-soft);
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .theory-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .theory-chevron {
+    margin-left: auto;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    transition: transform 0.15s ease-out;
+  }
+
+  .theory-details[open] .theory-chevron {
+    transform: rotate(180deg);
+  }
+
+  .theory-content {
+    padding: 14px 18px 16px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .theory-content ul {
+    margin: 10px 0 8px;
+    padding-left: 20px;
+  }
+
+  .theory-content li {
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+
+
+  /* Tarjetas específicamente de applet  */
 
   .card--applet::before {
     background: linear-gradient(to right, var(--accent-soft-strong), transparent);
@@ -279,6 +363,134 @@
       padding: 14px 14px 10px;
     }
   }
+  /* === Estilos para el Math-Canvas interactivo === */
+
+  .math-canvas-wrapper {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;   /* controles arriba, canvas abajo */
+    gap: 12px;
+  }
+
+  /* Controles */
+
+  .math-canvas-controls {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #f8fafc;
+  }
+
+  .math-canvas-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    align-items: flex-end;
+    margin-bottom: 8px;
+  }
+
+  .math-canvas-toolbar .group {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85rem;
+  }
+
+  .math-canvas-toolbar label {
+    margin-bottom: 2px;
+  }
+
+  .math-canvas-toolbar select {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+  }
+
+  /* Botones */
+
+  .math-canvas-controls button {
+    border: none;
+    border-radius: 999px;
+    padding: 6px 14px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(148,163,184,0.25);
+    background: #ffffff;
+    color: #111827;
+    transition: transform 0.08s ease-out, box-shadow 0.08s ease-out,
+                background 0.15s ease-out;
+  }
+
+  .math-canvas-controls button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px rgba(148,163,184,0.35);
+    background: var(--accent-soft, rgba(37,99,235,0.08));
+  }
+
+  .math-canvas-controls button.primary {
+    background: var(--accent, #2563eb);
+    color: #ffffff;
+  }
+
+  .math-canvas-controls button.primary:hover {
+    background: #1d4ed8;
+  }
+
+  /* Panel de estado */
+
+  .math-canvas-status {
+    margin-top: 6px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: #f3f4ff;
+    border: 1px solid rgba(129,140,248,0.4);
+    font-size: 0.85rem;
+    color: #374151;
+  }
+
+  .math-canvas-status b {
+    color: #111827;
+  }
+
+  /* Caja del canvas */
+
+  .math-canvas-canvasbox {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 10px;
+
+    /* Altura fija para que no se rompa el layout */
+    height: 440px;
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* El propio canvas */
+
+  #math-canvas {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    border-radius: 12px;
+    cursor: crosshair;
+
+    background:
+      radial-gradient(circle at top left, rgba(191,219,254,0.4) 0, transparent 55%),
+      #f9fafb;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 30px rgba(15,23,42,0.12);
+  }
+
 </style>
 
   </head>
@@ -672,6 +884,7 @@ class Polygon:
         P = self.points
         m = max(P)
         M = [m[0]+1,m[1]+0.001*random()]
+        print(M)
         if q in P:
             sol = true
         else:
@@ -806,34 +1019,256 @@ selected_point = None
 
       <header>
         <div class="title">
-          Nubes de puntos interactivas
-          <span class="title-badge">SageMath · Geometría computacional</span>
+          Estudio general punto-polígono
+          <span class="title-badge">Nubes, convexidad y tangentes · SageMath</span>
         </div>
         <p class="subtitle">
-          Exploración visual de nubes de puntos generadas aleatoriamente, con distribución gaussiana o uniforme.
+          Interfaz interactiva para estudiar la posición de un punto respecto a un polígono:
+          generación de nubes, cierre convexo, convexidad, prueba punto en polígono, tangentes y área.
         </p>
-        <p class="byline">Por TuNombre · <span style="opacity:0.7;">Universidad / Curso</span></p>
+
+        <p class="byline">Alejandro Alcázar Mendoza · <span style="opacity:0.7;">202302063@alu.icai.comillas.edu</span></p>
+        <p class="byline">Jorge Gonzélez Pérez · <span style="opacity:0.7;">202304501@alu.icai.comillas.edu</span></p>
+        <p class="byline">Javier Andrés Bernardez · <span style="opacity:0.7;">202305100@alu.comillas.edu</span></p>
+        <p class="byline">Geometría Computacional · <span style="opacity:0.7;">ICAI, iMAT</span></p>
       </header>
 
       <hr>
 
-      <section>
-        <h2>Introducción</h2>
-        <p>
-          En esta página se estudia la generación de nubes de puntos en el plano mediante distintas distribuciones
-          de probabilidad. El objetivo es disponer de un entorno gráfico sencillo para experimentar con los parámetros
-          y observar el comportamiento geométrico de los datos.
-        </p>
-      </section>
+    <section class="intro-card">
+      <h2>Introducción</h2>
+
+      <p>
+        Este proyecto constituye un entorno interactivo para el estudio sistemático de las relaciones entre
+        un punto y un polígono generados a partir de un conjunto discreto de puntos en el plano. El objetivo
+        es analizar, visualizar y comparar distintos algoritmos fundamentales de la geometría computacional,
+        poniendo especial énfasis en su comportamiento geométrico y en su interpretación estructural.
+      </p>
+
+      <p>
+        La herramienta combina una representación continua en <em>canvas</em> con applets interactivos específicos,
+        permitiendo inspeccionar paso a paso las decisiones combinatorias y geométricas que toman los algoritmos.
+        De este modo, constituye un apoyo tanto para la docencia de geometría computacional como para la exploración
+        experimental de estructuras poligonales a partir de datos.
+      </p>
+    </section>
+
+
+
+    <section>
+      <h2>Instrucciones</h2>
+
+      <p>
+        En la primera sección encontrarás varios applets encadenados. El <strong>Applet&nbsp;1</strong>
+        permite generar una nube de puntos y construir distintos polígonos; cada polígono creado se
+        <strong>almacena en una cola con un máximo de 10 polígonos en memoria</strong>.
+      </p>
+
+      <p>
+        En el <strong>Applet&nbsp;2</strong> se selecciona el <strong>polígono activo</strong> de esa cola,
+        mientras que en el <strong>Applet&nbsp;4</strong> se elige el <strong>punto de consulta</strong>
+        desde el que se aplican las distintas pruebas geométricas (interioridad, tangentes, etc.).
+      </p>
+
+      <p>
+        La segunda sección ofrece un <strong>canvas interactivo</strong> donde es posible añadir puntos,
+        cerrar el polígono mediante distintos métodos y visualizar de forma unificada los resultados de los
+        algoritmos sin necesidad de usar SageMath.
+      </p>
+    </section>
+
+      <hr>
 
       <section>
-        <h2>Instrucciones</h2>
-        <p>
-          Usa el primer applet para generar una nube de puntos. Puedes elegir el número de puntos, el tipo de
-          distribución y los parámetros de la gaussiana. El segundo applet se reservará para futuros experimentos
-          (por ejemplo, el estudio de polígonos).
-        </p>
+
+        <h2>Generador y Selector</h2>
+<p>
+  Esta sección reúne los dos applets fundamentales para iniciar el flujo de trabajo: la
+  <b>generación</b> de polígonos a partir de una nube de puntos y la <b>selección</b> del polígono
+  activo con el que operarán las herramientas posteriores. El Applet&nbsp;1 produce distintos tipos
+  de poligonizaciones y las almacena en una cola de hasta diez elementos, mientras que el
+  Applet&nbsp;2 permite escoger cualquiera de ellos para su visualización y análisis detallado.
+</p>
+
       </section>
+
+<section>
+  <div class="card theory-card">
+    <details class="theory-details">
+      <summary class="theory-summary">
+        <span class="theory-icon">i</span>
+        <span class="theory-title">Generación de nubes de puntos</span>
+        <span class="theory-chevron">▾</span>
+      </summary>
+
+      <div class="theory-content">
+
+        <h4>Distribución uniforme (random)</h4>
+        <p>
+          En este modo, cada punto \( (x, y) \) se escoge de manera <b>uniforme</b> dentro de un
+          rectángulo. Matemáticamente:
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            x \sim U(a,b), \qquad
+            y \sim U(c,d)
+          \]
+        </p>
+
+        <p>
+          Todas las posiciones tienen la misma probabilidad. La densidad de probabilidad es constante:
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            f(x,y) = 
+            \frac{1}{(b-a)(d-c)}
+            \quad \text{para } x\in[a,b],\; y\in[c,d].
+          \]
+        </p>
+
+        <p>
+          La nube resultante tiende a distribuirse de manera homogénea por el plano.
+        </p>
+
+
+        <h4>Distribución gaussiana (normal)</h4>
+        <p>
+          En este modo, los puntos se generan siguiendo una <b>distribución normal bidimensional</b>
+          centrada típicamente en el origen. Cada coordenada es independiente:
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            x \sim \mathcal{N}(0, \sigma^2),
+            \qquad
+            y \sim \mathcal{N}(0, \sigma^2)
+          \]
+        </p>
+
+        <p>
+          Su densidad conjunta es:
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            f(x,y)
+            \;=\;
+            \frac{1}{2\pi\sigma^{2}}
+            \exp\!\left(
+              -\frac{x^{2}+y^{2}}{2\sigma^{2}}
+            \right).
+          \]
+        </p>
+
+        <p>
+          La concentración es mayor cerca del centro y decrece radialmente, produciendo nubes más compactas.
+        </p>
+
+
+        <h4>Comparación geométrica</h4>
+        <ul>
+          <li>
+            <b>Uniforme:</b> dispersión regular, bordes menos predecibles, poligonizaciones más variadas.
+          </li>
+          <li>
+            <b>Gaussiana:</b> mayor densidad central, polígonos más compactos y formas más suaves.
+          </li>
+        </ul>
+
+        <p>
+          Estas distribuciones permiten estudiar cómo la estructura de la nube inicial afecta a las
+          poligonizaciones y a los algoritmos geométricos utilizados en la primera sección.
+        </p>
+
+      </div>
+    </details>
+  </div>
+</section>
+
+<section>
+  <div class="card theory-card">
+    <details class="theory-details">
+      <summary class="theory-summary">
+        <span class="theory-icon">i</span>
+        <span class="theory-title">Poligonizaciones</span>
+        <span class="theory-chevron">▾</span>
+      </summary>
+
+      <div class="theory-content">
+
+        <h4>1. Envolvente convexa (Graham Scan)</h4>
+        <p>
+          Graham Scan construye el <b>cierre convexo</b> de una nube de puntos ordenando los puntos por
+          ángulo polar y descartando aquellos que generan un giro no permitido.
+          El criterio principal se basa en el <b>signo del área</b>:
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            \Delta(p_{i-1}, p_i, p_{i+1}) \;>\; 0 
+            \quad \Rightarrow \quad
+            \text{giro antihorario (válido)}
+          \]
+        </p>
+
+        <p>
+          El resultado es un polígono convexo que contiene todos los puntos del conjunto.
+        </p>
+
+
+        <h4>2. Poligonización monótona en \(x\)</h4>
+        <p>
+          Un polígono es <b>monótono en \(x\)</b> si cualquier recta vertical interseca su interior en un
+          único segmento. Para construir una poligonización de este tipo:
+        </p>
+
+        <ul>
+          <li>se ordenan los puntos por su coordenada \(x\),</li>
+          <li>se conectan formando dos cadenas (superior e inferior),</li>
+          <li>garantizando que cada cadena es monótona respecto al eje \(x\).</li>
+        </ul>
+
+        <p>
+          Esta estructura es fundamental en algoritmos de triangulación y en la descomposición en polígonos simples.
+        </p>
+
+
+        <h4>3. Poligonización monótona en \(y\)</h4>
+        <p>
+          Es análoga al caso anterior, pero respecto al eje vertical. Un polígono es
+          <b>monótono en \(y\)</b> si cualquier recta horizontal lo corta en un único segmento.
+        </p>
+
+        <p>
+          Se obtiene ordenando los puntos por \(y\) y formando cadenas superior e inferior monótonas.
+        </p>
+
+
+        <h4>4. Poligonización estrellada</h4>
+        <p>
+          Un polígono es <b>estrellado</b> si existe un punto \(c\) tal que todos los segmentos
+          \(\overline{c\,v_i}\) hacia los vértices están completamente dentro del polígono.
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            \forall i,\quad \overline{c\,v_i} \subset P
+          \]
+        </p>
+
+        <p>
+          En la poligonización estrellada generada por el applet, se selecciona un centro y se ordenan los vértices por ángulo circular alrededor de él, generando
+          una poligonal sin autointersecciones.
+        </p>
+
+      </div>
+    </details>
+  </div>
+</section>
+
+
 
       <!-- APPLET 1 -->
       <section>
@@ -842,11 +1277,17 @@ selected_point = None
             <div class="card-title">Applet 1 · Generador de polígonos</div>
             <span class="card-tag">Generador</span>
           </div>
-          <div class="card-body">
-            <p>
-              Ajusta el número de puntos y elige entre distribución <b>gaussiana</b> o <b>aleatoria uniforme</b>.
-            </p>
-          </div>
+      <div class="card-body">
+        <p>
+          Este applet genera una nube de puntos en el plano, eligiendo el número de puntos y el tipo de
+          distribución (<b>gaussiana</b> o <b>aleatoria uniforme</b>). A partir de esa nube construye un
+          polígono mediante el algoritmo seleccionado (<b>Graham</b>, poligonización <b>monótona</b> en
+          <i>x</i> o <i>y</i>, o poligonización <b>estrellada</b>), que se muestra superpuesto a los datos.
+        </p>
+        <p>
+          Cada vez que se ejecuta, el polígono obtenido se <b>guarda en la cola interna</b>, de donde podrá
+          seleccionarse más adelante en el Applet&nbsp;2 para ser analizado por el resto de la sección.
+        </p>
 
           <div class="compute-applet" id="applet1">
             <script type="text/x-sage">
@@ -914,11 +1355,17 @@ def applet_nube(
             <div class="card-title">Applet 2 · Selector de polígono</div>
             <span class="card-tag">Selector</span>
           </div>
-          <div class="card-body">
-            <p>
-              Selecciona el polígono con el que quieras trabajar
-            </p>
-          </div>
+            <div class="card-body">
+              <p>
+                Este applet permite <b>elegir el polígono activo</b> entre los que han sido generados y almacenados
+                previamente en la cola del Applet&nbsp;1. Basta con seleccionar su índice para visualizarlo y
+                marcarlo como el polígono sobre el que trabajarán los applets siguientes.
+              </p>
+              <p>
+                Si el índice corresponde a una posición vacía de la cola, el applet mostrará un aviso indicando que
+                no existe ningún polígono almacenado en ese lugar.
+              </p>
+            </div>
 
           <div class="compute-applet" id="applet2">
             <script type="text/x-sage">
@@ -947,18 +1394,204 @@ def applet_2(
               rgbcolor=(0.10, 0.20, 0.60),
               thickness=1)
     show(g, aspect_ratio=1, axes=False, figsize=5)
-
             </script>
           </div>
         </div>
       </section>
 
+      <!-- APPLET G1 · Guardar lista de puntos -->
       <section>
-        <h2>Discusión</h2>
-        <p>
-            SEPARADOR
-        </p>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Applet G1 · Guardar lista de puntos</div>
+            <span class="card-tag">Guardar</span>
+          </div>
+          <div class="card-body">
+            <p>
+              Muestra las coordenadas del polígono seleccionado (Applet 2) en una lista
+              que puedes copiar al portapapeles.
+            </p>
+          </div>
+
+          <!-- OJO: id distinto de applet2, y sin anidar compute-applet -->
+          <div class="compute-applet" id="appletG1">
+            <script type="text/x-sage">
+P = handler.get_selected()
+
+if P is None:
+    pretty_print(html(
+        "<h3 style='text-align:center;'>"
+        "No hay ningún polígono seleccionado (usa el Applet 2)."
+        "</h3>"
+    ))
+else:
+    pretty_print(html(
+        "<h3 style='text-align:center;'>Lista de puntos del polígono seleccionado</h3>"
+    ))
+    lista = "[\n"
+    for (x, y) in P.points:
+        lista += "  [%.4f, %.4f],\n" % (float(x), float(y))
+    lista += "]"
+
+    html_str = """
+<div style='margin-top:10px;'>
+  <textarea id="poly-coords" rows="10"
+            style="width:100%%; font-family:monospace; font-size:0.85rem;">%s</textarea>
+  <br>
+  <button type="button"
+          style="margin-top:6px; padding:4px 10px; border-radius:999px;
+                 border:1px solid #d1d5db; background:#fff; cursor:pointer;
+                 font-size:0.85rem;"
+          onclick="var ta = document.getElementById('poly-coords');
+                   ta.select();
+                   document.execCommand('copy');">
+    Copiar al portapapeles
+  </button>
+</div>
+""" % lista
+
+    pretty_print(html(html_str))
+            </script>
+          </div>
+        </div>
       </section>
+
+
+
+    <hr>
+      <section>
+        <h2>Convexidad</h2>
+<p>
+  Los applets de esta sección permiten visualizar de manera detallada cómo los conceptos
+  teóricos de orientación, área signada y clasificación de vértices se traducen en
+  procedimientos computacionales. El análisis paso a paso muestra no solo si un polígono es
+  convexo o no, sino por qué lo es, identificando los vértices responsables de su geometría.
+</p>
+
+      </section>
+
+
+
+    <section>
+      <div class="card theory-card">
+        <details class="theory-details">
+          <summary class="theory-summary">
+            <span class="theory-icon">i</span>
+            <span class="theory-title">Área signada de un triángulo</span>
+            <span class="theory-chevron">▾</span>
+          </summary>
+
+          <div class="theory-content">
+            <p>
+              Dados tres puntos 
+              \( p_1 = (x_1, y_1),\; p_2 = (x_2, y_2),\; p_3 = (x_3, y_3) \),
+              el área signada del triángulo que determinan se calcula mediante el siguiente determinante:
+            </p>
+
+            <p style="text-align:center; font-size:0.95rem;">
+              \[
+              \Delta(p_1, p_2, p_3)
+              = \frac{1}{2}
+              \det \begin{pmatrix}
+              1 & 1 & 1 \\
+              x_1 & x_2 & x_3 \\
+              y_1 & y_2 & y_3
+              \end{pmatrix}
+              \]
+            </p>
+
+            <p>
+              Esta expresión es equivalente a la usada en el código Sage de la presentación, basada en
+              una diferencia de productos vectoriales en dos dimensiones, una forma más eficiente
+              computacionalmente:
+            </p>
+
+            <p style="text-align:center; font-size:0.95rem;">
+              \[
+              \frac{
+              (b_x - a_x)(c_y - a_y)
+              \;-\;
+              (b_y - a_y)(c_x - a_x)
+              }{2}
+              \]
+            </p>
+
+            <p>
+              El signo del área indica la orientación del recorrido
+              \( p_1 \to p_2 \to p_3 \): positiva si es antihorario y negativa si es horario.
+            </p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+<section>
+  <div class="card theory-card">
+    <details class="theory-details">
+      <summary class="theory-summary">
+        <span class="theory-icon">i</span>
+        <span class="theory-title">Convexidad de un polígono</span>
+        <span class="theory-chevron">▾</span>
+      </summary>
+
+      <div class="theory-content">
+
+        <h4>Definición matemática</h4>
+        <p>
+          Un polígono \(P\) es <b>convexo</b> si para cualquier par de puntos \(x, y \in P\),
+          el segmento \( \overline{xy} \) está completamente contenido en el polígono:
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            \overline{xy} \subset P.
+          \]
+        </p>
+
+        <p>
+          Si existe algún par de puntos cuyo segmento no queda dentro de \(P\), entonces
+          el polígono es <b>no convexo</b> (o <b>cóncavo</b>).
+        </p>
+
+        <h4>Test computacional (basado en el área signada)</h4>
+
+        <p>
+          Para comprobar computacionalmente la convexidad, se clasifica cada vértice del polígono
+          mediante el <b>test de orientación</b>, implementado con el área signada.
+          Dado un vértice \(v_i\) y sus adyacentes \(v_{i-1}\) y \(v_{i+1}\), se evalúa:
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            \Delta(v_{i-1}, v_i, v_{i+1})
+          \]
+        </p>
+
+        <p>
+          Suponiendo que el polígono está orientado en sentido <b>antihorario</b>, se clasifica:
+        </p>
+
+        <ul>
+          <li>
+            \( \Delta(v_{i-1}, v_i, v_{i+1}) \ge 0 \):  
+            el vértice \(v_i\) es <b>convexo</b> (incluye colinealidad: \(\Delta = 0\)).
+          </li>
+          <li>
+            \( \Delta(v_{i-1}, v_i, v_{i+1}) &lt; 0 \):  
+            el vértice \(v_i\) es <b>cóncavo</b>.
+          </li>
+        </ul>
+
+        <p>
+          El polígono es <b>convexo</b> si y solo si <b>todos</b> sus vértices son convexos.
+          Basta con encontrar un único vértice cóncavo para que el polígono sea no convexo.
+        </p>
+
+      </div>
+    </details>
+  </div>
+</section>
+
 
       <!-- APPLET 3  -->
       <section>
@@ -968,9 +1601,21 @@ def applet_2(
             <span class="card-tag">Geometría</span>
           </div>
           <div class="card-body">
-            <p>
-              BODY CARD
-            </p>
+            <div class="card-body">
+              <p>
+                Este applet realiza un <b>análisis de convexidad</b> sobre el polígono seleccionado en el
+                Applet&nbsp;2. Para cada vértice se aplica el test de orientación basado en el
+                <b>área signada</b>, determinando si se trata de un vértice convexo o cóncavo.
+              </p>
+
+              <p>
+                El control deslizante permite recorrer los pasos del algoritmo y visualizar, para cada vértice,
+                sus puntos adyacentes y el triángulo local utilizado en la clasificación. Los vértices convexos
+                se muestran en <span style="color:green;"><b>verde</b></span> y los cóncavos en
+                <span style="color:red;"><b>rojo</b></span>.
+              </p>
+            </div>
+
           </div>
 
           <div class="compute-applet" id="applet3">
@@ -1035,24 +1680,408 @@ else:
         </div>
       </section>
 
-      <section>
-        <h2>Discusión</h2>
-        <p>
-            SEPARADOR
-        </p>
-      </section>
 
-      <!-- APPLET 4  -->
+      <!-- APPLET  4 -->
       <section>
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Applet 4 · Selector de punto</div>
-            <span class="card-tag">Selector</span>
+            <div class="card-title">Applet 4 · Análisis de Convexidad II </div>
+            <span class="card-tag">Geometría</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body">
+              <p>
+                Este applet permite examinar la convexidad del polígono <b>vértice a vértice</b>, utilizando
+                directamente el cálculo del <b>área signada</b> entre cada vértice y sus dos adyacentes. El
+                proceso genera una secuencia de pasos que muestran la contribución individual de cada punto a
+                la forma global del polígono.
+              </p>
+
+              <p>
+                Mediante el deslizador se recorren todos los vértices: en cada paso se resalta el triángulo
+                local asociado y se clasifica el vértice como
+                <span style="color:green;"><b>convexo</b></span> o
+                <span style="color:red;"><b>cóncavo</b></span>. En el paso final se visualiza la
+                clasificación completa del polígono, permitiendo identificar de un vistazo su estructura
+                geométrica.
+              </p>
+            </div>
+
+          </div>
+
+<div class="compute-applet" id="applet4">
+  <script type="text/x-sage">
+P = handler.get_selected()
+
+# ========== DUMMY SI NO HAY POLÍGONO ==========
+if P is None:
+    pretty_print(html(
+        "<h3 style='text-align:center;'>"
+        "No hay seleccionado ningún polígono."
+        "</h3>"
+    ))
+
+    @interact
+    def applet_convexidad_dummy():
+        pretty_print(html(
+            "<span style='font-size:0.9rem; color:#666;'>"
+            "Selecciona primero un polígono en el Applet 2."
+            "</span>"
+        ))
+
+else:
+    pts = P.points
+    n   = len(pts)
+
+    if n < 3:
+        pretty_print(html(
+            "<h3 style='text-align:center;'>"
+            "Un polígono debe tener al menos 3 vértices."
+            "</h3>"
+        ))
+
+        @interact
+        def applet_convexidad_dummy2():
+            pretty_print(html(
+                "<span style='font-size:0.9rem; color:#666;'>"
+                "Selecciona un polígono válido."
+                "</span>"
+            ))
+
+    else:
+        # ----------------------------------------------------
+        # PRECALCULO: lista de pasos
+        # paso i: (i, v_prev, v, v_next, convex_bool)
+        # ----------------------------------------------------
+        steps = []
+
+        for idx in range(n):
+            v_prev = pts[(idx - 1) % n]
+            v      = pts[idx]
+            v_next = pts[(idx + 1) % n]
+
+            s = areaSignada(v_prev, v, v_next)
+            convex = (s >= 0)
+
+            steps.append((idx, v_prev, v, v_next, convex))
+
+        max_k = len(steps)
+
+        pretty_print(html(
+            "<h3 style='text-align:center;'>"
+            "Análisis de convexidad vértice a vértice"
+            "</h3>"
+        ))
+
+        @interact
+        def applet_convexidad(
+            k = slider(0, max_k, 1, default=0, label="Paso")
+        ):
+            # Dibujo base
+            g  = polygon(pts, alpha=0.30, rgbcolor=(0.65, 0.75, 1.00))
+            g += line(pts + [pts[0]], rgbcolor=(0.10, 0.20, 0.60), thickness=1)
+
+            # Caso k = 0 → solo polígono
+            if k == 0:
+                show(g, aspect_ratio=1, axes=True, figsize=5)
+                pretty_print(html(
+                    "<div style='text-align:center;'>"
+                    "Ningún vértice inspeccionado todavía."
+                    "</div>"
+                ))
+                return
+
+            if k == max_k:
+                for (idx, v_prev, v, v_next, convex) in steps:
+                    color = "green" if convex else "red"
+                    g += point([v], size=40, rgbcolor=color)
+
+                show(g, aspect_ratio=1, axes=True, figsize=5)
+
+                msg = (
+                    "Paso final: vértices coloreados — "
+                    "<span style='color:green;'><b>convexos</b></span> "
+                    " / "
+                    "<span style='color:red;'><b>cóncavos</b></span>."
+                )
+                pretty_print(html(
+                    f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
+                ))
+                return
+
+            # ----------------------------------------------------
+            # Paso intermedio: analizar SOLO el vértice k-1
+            # ----------------------------------------------------
+            idx, v_prev, v, v_next, convex = steps[k-1]
+
+            # triángulo local
+            tri = [v_prev, v, v_next]
+            col = "green" if convex else "orange"
+            g += polygon(tri, alpha=0.35, color=col)
+            g += line(tri + [tri[0]], color=col, thickness=2)
+
+            # colorear vértices implicados
+            g += point([v_prev], size=35, rgbcolor="blue")
+            g += point([v_next], size=35, rgbcolor="blue")
+            g += point([v], size=40, rgbcolor=("green" if convex else "red"))
+
+            show(g, aspect_ratio=1, axes=True, figsize=5)
+
+            msg = (
+                f"Paso {k}: vértice {idx} → "
+                + (
+                    "<b style='color:green;'>CONVEXO</b>"
+                    if convex
+                    else "<b style='color:orange;'>CÓNCAVO</b>"
+                )
+            )
+            pretty_print(html(
+                f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
+            ))
+  </script>
+</div>
+      </section>
+
+    <hr>
+
+      <section>
+
+        <h2>Área</h2>
+<p>
+  En esta sección se calcula el área de un polígono mediante la descomposición en
+  triángulos basada en el <b>área signada</b>. Este método permite obtener tanto el área
+  total como la contribución de cada triángulo en una secuencia de pasos visuales.
+</p>
+
+      </section>
+
+<section>
+  <div class="card theory-card">
+    <details class="theory-details">
+      <summary class="theory-summary">
+        <span class="theory-icon">i</span>
+        <span class="theory-title">Área de un polígono</span>
+        <span class="theory-chevron">▾</span>
+      </summary>
+
+      <div class="theory-content">
+
+        <h4>Cálculo mediante áreas signadas</h4>
+        <p>
+          El área de un polígono \(P\) puede obtenerse sumando las
+          <b>áreas signadas</b> de los triángulos formados por un punto arbitrario \(p\)
+          (que puede estar dentro o fuera del polígono) y cada una de sus aristas.
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            \text{Área}(P)
+            \;=\;
+            \sum_{i=0}^{n-1}
+            \Delta\bigl(p,\; v_i,\; v_{i+1} \bigr),
+            \qquad
+            (v_n = v_0)
+          \]
+        </p>
+
+        <p>
+          Esta formulación es equivalente a la regla del "shoelace" y a los métodos
+          clásicos de descomposición en triángulos, pero utilizando el área signada como
+          unificador para la orientación.
+        </p>
+
+        <h4>Importancia del signo</h4>
+        <p>
+          El signo del área total no solo determina el valor geométrico, sino también
+          la <b>orientación del polígono</b>:
+        </p>
+
+        <ul>
+          <li><b>Área &gt; 0</b>: los vértices están en orientación
+              <b>antihoraria </b>.</li>
+          <li><b>Área &lt; 0</b>: los vértices están en orientación
+              <b>horaria</b>.</li>
+        </ul>
+
+        <p>
+          El valor absoluto del área proporciona el área geométrica real del polígono.
+        </p>
+
+      </div>
+    </details>
+  </div>
+</section>
+
+
+      <!-- APPLET 5  -->
+      <section>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Applet 5 · Área del polígono</div>
+            <span class="card-tag">Geometría</span>
           </div>
           <div class="card-body">
             <p>
-              BODY CARD
+              Este applet calcula el <b>área del polígono</b> seleccionado en el
+              Applet&nbsp;2 utilizando una triangulación fija respecto al primer vértice.
+              Cada triángulo generado se evalúa mediante el <b>área signada</b>,
+              acumulando sus contribuciones para obtener el área total.
             </p>
+
+            <p>
+              El deslizador permite avanzar paso a paso por la construcción: en cada etapa se
+              resalta el triángulo correspondiente y se muestra la <b>acumulación parcial</b>
+              del área. Al completar todos los pasos, se obtiene el valor final del área
+              (mostrado en valor absoluto).
+            </p>
+          </div>
+
+          </div>
+
+<div class="compute-applet" id="applet5">
+  <script type="text/x-sage">
+P = handler.get_selected()
+
+# ========== DUMMY: falta polígono ==========
+if P is None:
+    pretty_print(html(
+        "<h3 style='text-align:center;'>"
+        "No hay seleccionado ningún polígono."
+        "</h3>"
+    ))
+
+    @interact
+    def applet_area_dummy():
+        pretty_print(html(
+            "<span style='font-size:0.9rem; color:#666;'>"
+            "Selecciona primero un polígono en el Applet 2."
+            "</span>"
+        ))
+
+else:
+    # ----------------------------------------------------
+    # PRECÁLCULO DE TRIÁNGULOS Y ÁREAS (fuera del interact)
+    # ----------------------------------------------------
+    pts = P.points
+    n   = len(pts)
+
+    if n < 3:
+        pretty_print(html(
+            "<h3 style='text-align:center;'>"
+            "El polígono tiene menos de 3 puntos."
+            "</h3>"
+        ))
+
+        @interact
+        def applet_area_dummy2():
+            pretty_print(html(
+                "<span style='font-size:0.9rem; color:#666;'>"
+                "Necesitas al menos un triángulo para calcular el área."
+                "</span>"
+            ))
+    else:
+        base = pts[0]
+        step_data   = []   # (triángulo, área_signada, área_acumulada, color)
+        acum = 0
+
+        for i in range(1, n-1):
+            a = pts[i]
+            b = pts[i+1]
+            s = areaSignada(base, a, b)      # área signada de este triángulo
+            acum += s                       # acumulamos
+
+            color = "green" if s >= 0 else "orange"
+            tri   = [base, a, b]
+            step_data.append((tri, s, acum, color))
+
+        max_k       = len(step_data)
+        area_final  = acum
+        area_abs    = abs(acum)
+
+        # Mensaje de resumen encima del applet
+        pretty_print(html(
+            f"<h3 style='text-align:center;'>"
+            f"Área total = {area_abs:.4f}"
+            f"</h3>"
+        ))
+
+        @interact
+        def applet_area(
+            k = slider(0, max_k, 1, default=0, label="Paso")
+        ):
+            # Dibujo base: polígono
+            g  = polygon(pts, alpha=0.30, rgbcolor=(0.65, 0.75, 1.00))
+            g += line(pts + [pts[0]],
+                      rgbcolor=(0.10, 0.20, 0.60),
+                      thickness=1)
+
+            # Añadimos, hasta el paso k, los triángulos
+            area_parcial = 0
+            for i in range(k):
+                tri, s, acum_i, col = step_data[i]
+                g += polygon(tri, alpha=0.35, color=col)
+                g += line(tri + [tri[0]], color=col, thickness=1)
+                area_parcial = acum_i
+
+            show(g, aspect_ratio=1, axes=True, figsize=5)
+
+            # Texto explicativo bajo la figura
+            if k == 0:
+                msg = (
+                    "Sin triángulos aún: área parcial = 0.0000"
+                )
+            else:
+                msg = (
+                    f"Tras {k} triángulo(s): "
+                    f"área signada parcial = <b>{area_parcial:.4f}</b>, "
+                )
+
+            pretty_print(html(
+                f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
+            ))
+
+  </script>
+</div>
+      </section>
+
+
+      <hr>
+
+      <section>
+        <h2>Selección de punto</h2>
+<p>
+  En esta sección se define el <b>punto de consulta</b> que se utilizará en los algoritmos de
+  posición relativa, tangentes y otras pruebas geométricas. El punto puede elegirse libremente
+  mediante sus coordenadas, permitiendo explorar diferentes configuraciones respecto al polígono
+  seleccionado.
+</p>
+
+      </section>
+
+      <!-- APPLET 6  -->
+      <section>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Applet 6 · Selector de punto</div>
+            <span class="card-tag">Selector</span>
+          </div>
+          <div class="card-body">
+            <div class="card-body">
+              <p>
+                Este applet permite seleccionar de forma interactiva el <b>punto de consulta</b> mediante sus
+                coordenadas \(x\) e \(y\). El punto elegido se representa en rojo sobre el polígono activo,
+                permitiendo estudiar su posición relativa y utilizarlo posteriormente en los applets de
+                interioridad, tangentes y pruebas geométricas asociadas.
+              </p>
+
+              <p>
+                Las coordenadas pueden ajustarse con precisión mediante deslizadores, lo que facilita explorar
+                distintos escenarios y analizar cómo varía la relación entre el punto y el polígono seleccionado
+                en el Applet&nbsp;2.
+              </p>
+            </div>
+
+
           </div>
 
 <div class="compute-applet" id="applet4">
@@ -1130,7 +2159,7 @@ else:
             </p>
           </div>
 
-<div class="compute-applet" id="applet5">
+<div class="compute-applet" id="applet4">
   <script type="text/x-sage">
 
 P = handler.get_selected()
@@ -1270,22 +2299,24 @@ else:
             pretty_print(html(
                 f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
             ))
+
+
   </script>
 </div>
       </section>
 
-    <section>
+      <section>
         <h2>Discusión</h2>
         <p>
             SEPARADOR
         </p>
       </section>
 
-      <!-- APPLET 7  -->
+      <!-- APPLET 6  -->
       <section>
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Applet 7 · Área del polígono</div>
+            <div class="card-title">Applet 6 · Tangentes</div>
             <span class="card-tag">Geometría</span>
           </div>
           <div class="card-body">
@@ -1294,111 +2325,364 @@ else:
             </p>
           </div>
 
-<div class="compute-applet" id="applet7">
+<div class="compute-applet" id="applet6">
   <script type="text/x-sage">
+
 P = handler.get_selected()
 
-# ========== DUMMY: falta polígono ==========
-if P is None:
+try:
+    q = selected_point
+except NameError:
+    q = None
+
+# ========== DUMMY: falta polígono o falta punto ==========
+if P is None or q is None:
     pretty_print(html(
         "<h3 style='text-align:center;'>"
-        "No hay seleccionado ningún polígono."
+        "Selecciona un polígono (Applet 2) y un punto (Applet 4)."
         "</h3>"
     ))
 
     @interact
-    def applet_area_dummy():
+    def applet_tangentes_dummy():
         pretty_print(html(
             "<span style='font-size:0.9rem; color:#666;'>"
-            "Selecciona primero un polígono en el Applet 2."
+            "No hay datos suficientes para ejecutar el algoritmo de tangentes."
             "</span>"
         ))
 
 else:
-    # ----------------------------------------------------
-    # PRECÁLCULO DE TRIÁNGULOS Y ÁREAS (fuera del interact)
-    # ----------------------------------------------------
-    pts = P.points
-    n   = len(pts)
+    es_convexo = P.is_convex()
 
-    if n < 3:
+    if es_convexo:
+        CP = ConvexPolygon(P.points)
+        aviso_convexidad = ""
+    else:
+        CP = P.convex_hull()
+        aviso_convexidad = (
+            "El polígono NO es convexo. "
+            "Para calcular tangentes, usamos su cierre convexo (contorno oscuro)."
+        )
+
+    hull_pts = CP.points
+    n = len(hull_pts)
+
+    if n < 2:
         pretty_print(html(
             "<h3 style='text-align:center;'>"
-            "El polígono tiene menos de 3 puntos."
+            "El cierre convexo tiene menos de 2 puntos: no se pueden definir tangentes."
             "</h3>"
         ))
 
         @interact
-        def applet_area_dummy2():
+        def applet_tangentes_dummy2():
             pretty_print(html(
                 "<span style='font-size:0.9rem; color:#666;'>"
-                "Necesitas al menos un triángulo para calcular el área."
+                "Selecciona un polígono con al menos 2 vértices en el cierre convexo."
                 "</span>"
             ))
+
     else:
-        base = pts[0]
-        step_data   = []   # (triángulo, área_signada, área_acumulada, color)
-        acum = 0
+        # caja para fijar la ventana de dibujo
+        xs = [p[0] for p in P.points] + [q[0]]
+        ys = [p[1] for p in P.points] + [q[1]]
+        xmin = min(xs) - 1
+        xmax = max(xs) + 1
+        ymin = min(ys) - 1
+        ymax = max(ys) + 1
 
-        for i in range(1, n-1):
-            a = pts[i]
-            b = pts[i+1]
-            s = areaSignada(base, a, b)      # área signada de este triángulo
-            acum += s                       # acumulamos
-
-            color = "green" if s >= 0 else "orange"
-            tri   = [base, a, b]
-            step_data.append((tri, s, acum, color))
-
-        max_k       = len(step_data)
-        area_final  = acum
-        area_abs    = abs(acum)
-
-        # Mensaje de resumen encima del applet
-        pretty_print(html(
-            f"<h3 style='text-align:center;'>"
-            f"Área total = {area_abs:.4f}"
-            f"</h3>"
-        ))
-
-        @interact
-        def applet_area(
-            k = slider(0, max_k, 1, default=0, label="Paso")
-        ):
-            # Dibujo base: polígono
-            g  = polygon(pts, alpha=0.30, rgbcolor=(0.65, 0.75, 1.00))
-            g += line(pts + [pts[0]],
-                      rgbcolor=(0.10, 0.20, 0.60),
-                      thickness=1)
-
-            # Añadimos, hasta el paso k, los triángulos
-            area_parcial = 0
-            for i in range(k):
-                tri, s, acum_i, col = step_data[i]
-                g += polygon(tri, alpha=0.35, color=col)
-                g += line(tri + [tri[0]], color=col, thickness=1)
-                area_parcial = acum_i
-
-            show(g, aspect_ratio=1, axes=True, figsize=5)
-
-            # Texto explicativo bajo la figura
-            if k == 0:
-                msg = (
-                    "Sin triángulos aún: área parcial = 0.0000"
-                )
-            else:
-                msg = (
-                    f"Tras {k} triángulo(s): "
-                    f"área signada parcial = <b>{area_parcial:.4f}</b>, "
-                )
-
+        # Si el punto es interior al cierre convexo, no hay tangentes reales desde fuera
+        if CP.point_in_convex(q):
             pretty_print(html(
-                f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
+                "<h3 style='text-align:center;'>"
+                "El punto está en el INTERIOR del cierre convexo: no hay tangentes exteriores."
+                "</h3>"
             ))
+
+            @interact
+            def applet_tangentes_interior():
+                g  = polygon(P.points, alpha=0.25, rgbcolor=(0.70, 0.80, 1.00))
+                g += line(P.points + [P.points[0]],
+                          rgbcolor=(0.30, 0.40, 0.90),
+                          thickness=1)
+                g += polygon(hull_pts, alpha=0.10, rgbcolor=(0.20, 0.30, 0.70))
+                g += line(hull_pts + [hull_pts[0]],
+                          rgbcolor=(0.10, 0.20, 0.60),
+                          thickness=1)
+                g += point([q], size=35, rgbcolor='red')
+
+                show(g, aspect_ratio=1, axes=True, figsize=5,
+                     xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
+
+                pretty_print(html(
+                    "<div style='text-align:center; font-size:0.95rem;'>"
+                    "El punto es interior: todas las rectas que lo unen con vértices cortan el interior del polígono."
+                    "</div>"
+                ))
+
+        else:
+            # ----------------------------------------------------
+            # PRECÁLCULO DE PASOS:
+            # ----------------------------------------------------
+            steps = []              
+            tangents_info = []     
+            visited = set()
+
+            for i in range(n):
+                v_prev = hull_pts[i-1]
+                v      = hull_pts[i]
+                v_next = hull_pts[(i+1) % n]
+
+                s1 = areaSignada(v_prev, v,     q)
+                s2 = areaSignada(v,      v_next, q)
+
+                left_on_1 = (s1 >= 0)
+                left_on_2 = (s2 >= 0)
+                es_tan_local = (left_on_1 != left_on_2)
+
+
+                steps.append({
+                    "type": "analysis",
+                    "v_prev": v_prev,
+                    "v": v,
+                    "v_next": v_next,
+                    "s1": s1,
+                    "s2": s2,
+                    "is_tangent": es_tan_local,
+                    "index": i
+                })
+                analysis_step_index = len(steps) - 1
+
+                if es_tan_local and tuple(v) not in visited:
+                    visited.add(tuple(v))
+
+                    qx, qy = float(q[0]), float(q[1])
+                    vx, vy = float(v[0]), float(v[1])
+                    dx, dy = vx - qx, vy - qy
+
+                    factor = 0.6
+                    ext = (vx + factor*dx, vy + factor*dy)
+
+                    steps.append({
+                        "type": "tangent",
+                        "v": v,
+                        "ext": ext,
+                        "index": i,
+                        "analysis_step": analysis_step_index
+                    })
+
+                    tangents_info.append({
+                        "v": v,
+                        "ext": ext,
+                        "analysis_step": analysis_step_index
+                    })
+
+                    if len(tangents_info) == 2:
+                        break
+
+            max_k = len(steps)
+
+            # Mensaje de cabecera
+            pretty_print(html(
+                f"<h3 style='text-align:center;'>{aviso_convexidad}</h3>"
+            ))
+
+            @interact
+            def applet_tangentes(
+                k = slider(0, max_k, 1, default=0, label="Paso")
+            ):
+                # Dibujo base: polígono original + cierre convexo + punto
+                g  = polygon(P.points, alpha=0.25, rgbcolor=(0.70, 0.80, 1.00))
+                g += line(P.points + [P.points[0]],
+                          rgbcolor=(0.30, 0.40, 0.90),
+                          thickness=1)
+                g += polygon(hull_pts, alpha=0.10, rgbcolor=(0.20, 0.30, 0.70))
+                g += line(hull_pts + [hull_pts[0]],
+                          rgbcolor=(0.10, 0.20, 0.60),
+                          thickness=1)
+                g += point([q], size=35, rgbcolor='red')
+
+                if k == 0:
+                    show(g, aspect_ratio=1, axes=True, figsize=5,
+                         xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
+                    pretty_print(html(
+                        "<div style='text-align:center;'>"
+                        "Ningún vértice inspeccionado todavía."
+                        "</div>"
+                    ))
+                    return
+
+                step = steps[k-1]
+
+
+                if step["type"] == "analysis":
+                    v_prev = step["v_prev"]
+                    v      = step["v"]
+                    v_next = step["v_next"]
+                    s1     = step["s1"]
+                    s2     = step["s2"]
+                    es_tan_local = step["is_tangent"]
+
+                    # triángulo 1: q, v_prev, v
+                    tri1 = [q, v_prev, v]
+                    col1 = "green" if s1 >= 0 else "orange"
+                    g += polygon(tri1, alpha=0.35, color=col1)
+                    g += line(tri1 + [tri1[0]], color=col1, thickness=1)
+
+                    # triángulo 2: q, v, v_next
+                    tri2 = [q, v, v_next]
+                    col2 = "green" if s2 >= 0 else "orange"
+                    g += polygon(tri2, alpha=0.35, color=col2)
+                    g += line(tri2 + [tri2[0]], color=col2, thickness=1)
+
+                    # vértice actual
+                    g += point([v], size=40,
+                               rgbcolor=("magenta" if es_tan_local else "blue"))
+
+                    # tangentes ya encontradas en pasos anteriores
+                    for t in tangents_info:
+                        if t["analysis_step"] < step["index"]:
+                            g += point([t["v"]], size=45, rgbcolor=(0.80, 0.00, 0.80))
+                            g += line([q, t["ext"]],
+                                      rgbcolor=(0.80, 0.00, 0.80),
+                                      thickness=2)
+
+                    show(g, aspect_ratio=1, axes=True, figsize=5,
+                         xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
+
+                    msg = (
+                        f"Paso {k}: inspeccionando vértice {step['index']} – "
+                        f"{'<b>TANGENTE DETECTADA</b>' if es_tan_local else 'no es tangente'}"
+                    )
+                    pretty_print(html(
+                        f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
+                    ))
+                else:
+                    v   = step["v"]
+                    ext = step["ext"]
+
+                    # tangentes anteriores a este paso
+                    for t in tangents_info:
+                        if t["analysis_step"] < step["analysis_step"]:
+                            g += point([t["v"]], size=45, rgbcolor=(0.80, 0.00, 0.80))
+                            g += line([q, t["ext"]],
+                                      rgbcolor=(0.80, 0.00, 0.80),
+                                      thickness=2)
+
+                    # tangente actual
+                    g += point([v], size=50, rgbcolor=(0.90, 0, 0.90))
+                    g += line([q, ext],
+                              rgbcolor=(0.90, 0, 0.90),
+                              thickness=2)
+
+                    show(g, aspect_ratio=1, axes=True, figsize=5,
+                         xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax)
+
+                    msg = (
+                        f"Paso {k}: recta tangente mostrada en vértice {step['index']}."
+                    )
+                    pretty_print(html(
+                        f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
+                    ))
+
 
   </script>
 </div>
       </section>
+
+      <section>
+        <div class="card card--applet">
+          <div class="card-header">
+            <div class="card-title">Math-Canvas interactivo</div>
+            <span class="card-tag">HTML5 Canvas</span>
+          </div>
+          <div class="card-body">
+            <p>
+              Interfaz en HTML5 que reproduce las ideas de los applets anteriores:
+              poligonización (Graham, monótona en <i>x</i> o <i>y</i>, estrellada),
+              análisis de convexidad y prueba de punto en polígono.
+            </p>
+          </div>
+
+          <div class="math-canvas-wrapper">
+            <!-- Controles arriba -->
+            <div class="math-canvas-controls">
+              <div class="math-canvas-toolbar">
+                <div class="group">
+                  <label for="poly-method">Método de cierre del polígono:</label>
+                  <select id="poly-method">
+                    <option value="graham">Graham (envolvente convexa)</option>
+                    <option value="xmonotone">Monótono respecto a x</option>
+                    <option value="ymonotone">Monótono respecto a y</option>
+                    <option value="star">Estrellado</option>
+                  </select>
+                </div>
+
+                <div class="group">
+                  <label for="mode-select">Modo interactivo:</label>
+                  <select id="mode-select">
+                    <option value="build">Construir polígono</option>
+                    <option value="point">Punto en polígono</option>
+                    <option value="convexity">Convexidad</option>
+                    <option value="tangent">Tangentes</option>
+                  </select>
+
+                </div>
+
+                <div class="group">
+                  <label>&nbsp;</label>
+                  <div>
+                    <button id="btn-close-polygon" class="primary">
+                      Cerrar polígono
+                    </button>
+                    <button id="btn-reset">
+                      Reiniciar
+                    </button>
+                  </div>
+                </div>
+
+                <div class="group">
+                  <label>Convexidad:</label>
+                  <button id="btn-analyze-convexity">
+                    Analizar convexidad
+                  </button>
+                </div>
+              </div>
+
+              <div id="convexity-summary"
+                   style="font-size:0.85rem; margin-top:4px;"></div>
+
+              <div id="convexity-step-wrapper"
+                   style="margin-top:6px; display:none;">
+                <label for="convexity-step" style="font-size:0.8rem;">
+                  Vértice (paso):
+                </label>
+                <input type="range" id="convexity-step"
+                       min="0" value="0" step="1"
+                       style="width:100%; margin-top:2px;">
+              </div>
+
+              <div class="math-canvas-status" id="math-canvas-status" style="margin-top:8px;">
+                Modo actual: <b>construir polígono</b>. Haz clic en la zona inferior para añadir puntos.
+                <br>Puntos clicados: <b>0</b>.
+              </div>
+
+              <p style="margin-top:8px; font-size:0.82rem;">
+                • En modo <b>Construir polígono</b> los clics añaden puntos a la nube.<br>
+                • Pulsa <b>Cerrar polígono</b> para aplicar la poligonización elegida.<br>
+                • En modo <b>Punto en polígono</b>, los clics marcan un punto rojo (ray casting).<br>
+                • En modo <b>Convexidad</b>, usa el deslizador para recorrer los vértices analizados.
+              </p>
+            </div>
+
+            <!-- Canvas abajo, ocupando todo el ancho -->
+            <div class="math-canvas-canvasbox">
+              <canvas id="math-canvas" width="900" height="440"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
 
       <hr>
@@ -1406,5 +2690,689 @@ else:
         Modificado por última vez: dd/mm/aaaa.
       </p>
     </div>
+
+<script>
+  // ============================================================
+  //  Math-Canvas interactivo
+  //  - poligonización (Graham, x-monótona, y-monótona, estrellada)
+  //  - modos: construir / punto en polígono / convexidad / tangentes
+  //  - info extra: área del polígono
+  // ============================================================
+  window.addEventListener('DOMContentLoaded', function () {
+    const canvas    = document.getElementById('math-canvas');
+    const statusBox = document.getElementById('math-canvas-status');
+    const btnClose  = document.getElementById('btn-close-polygon');
+    const btnReset  = document.getElementById('btn-reset');
+    const selMethod = document.getElementById('poly-method');
+    const selMode   = document.getElementById('mode-select');
+
+    const btnAnalyzeConvexity  = document.getElementById('btn-analyze-convexity');
+    const convexitySummary     = document.getElementById('convexity-summary');
+    const convexityStepWrapper = document.getElementById('convexity-step-wrapper');
+    const convexityStepSlider  = document.getElementById('convexity-step');
+
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let rawPoints = [];
+    let polygon   = [];
+    let testPoint = null;
+    let interactionMode = 'build'; // 'build' | 'point' | 'convexity' | 'tangent'
+
+    let convexitySteps = [];
+    let convexGlobal   = null;
+    let convexStepIdx  = 0;
+
+    // ---------- Utilidades geométricas ----------
+
+    function area2(a, b, c) {
+      return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+    }
+
+    function pointInPolygon(poly, pt) {
+      if (!poly || poly.length < 3) return false;
+      let inside = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const xi = poly[i].x, yi = poly[i].y;
+        const xj = poly[j].x, yj = poly[j].y;
+
+        const intersect =
+          ((yi > pt.y) !== (yj > pt.y)) &&
+          (pt.x < ((xj - xi) * (pt.y - yi) / (yj - yi) + xi));
+
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    function dist(a, b) {
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    // Transformación a coordenadas "matemáticas" [-3,3] para mostrar
+    function logicalCoords(p) {
+      const w = canvas.width;
+      const h = canvas.height;
+      const x = (p.x / w) * 6 - 3;          // [0,w] -> [-3,3]
+      const y = ((h - p.y) / h) * 6 - 3;    // invertimos eje y
+      return { x, y };
+    }
+
+    // Área signada del polígono
+    function polygonSignedArea(poly) {
+      if (!poly || poly.length < 3) return 0;
+      let area = 0;
+      const n = poly.length;
+      for (let i = 0; i < n; i++) {
+        const j = (i + 1) % n;
+        area += poly[i].x * poly[j].y - poly[j].x * poly[i].y;
+      }
+      return area / 2;
+    }
+
+    // ---------- Poligonizaciones ----------
+
+    function grahamHull(points) {
+      if (points.length <= 3) return [...points];
+      const pts = [...points].sort((p, q) =>
+        p.x === q.x ? p.y - q.y : p.x - q.x
+      );
+      const O = pts[0];
+      const others = pts.slice(1).sort((p, q) => {
+        const ang1 = Math.atan2(p.y - O.y, p.x - O.x);
+        const ang2 = Math.atan2(q.y - O.y, q.x - O.x);
+        if (ang1 === ang2) {
+          const d1 = (p.x - O.x) ** 2 + (p.y - O.y) ** 2;
+          const d2 = (q.x - O.x) ** 2 + (q.y - O.y) ** 2;
+          return d1 - d2;
+        }
+        return ang1 - ang2;
+      });
+      const ordered = [O, ...others];
+      const stack = [];
+      for (const p of ordered) {
+        while (stack.length >= 2 &&
+               area2(stack[stack.length - 2], stack[stack.length - 1], p) < 0) {
+          stack.pop();
+        }
+        stack.push(p);
+      }
+      return stack;
+    }
+
+    function xMonotone(points) {
+      if (points.length < 3) return [...points];
+      const P = [...points].sort((p, q) =>
+        p.x === q.x ? p.y - q.y : p.x - q.x
+      );
+      const pmin = P[0];
+      const pmax = P[P.length - 1];
+      const Lsup = [], Linf = [];
+      for (const punto of P) {
+        if (area2(pmin, pmax, punto) >= 0) Lsup.push(punto);
+        else Linf.push(punto);
+      }
+      return [...Linf, ...Lsup.reverse()];
+    }
+
+    function yMonotone(points) {
+      if (points.length < 3) return [...points];
+      const P = [...points].sort((p, q) =>
+        p.y === q.y ? p.x - q.x : p.y - q.y
+      );
+      const pmin = P[0];
+      const pmax = P[P.length - 1];
+      const Lizq = [], Lder = [];
+      for (const punto of P) {
+        if (area2(pmin, pmax, punto) >= 0) Lizq.push(punto);
+        else Lder.push(punto);
+      }
+      return [...Lder, ...Lizq.reverse()];
+    }
+
+    function starShaped(points) {
+      if (points.length < 3) return [...points];
+      let cx = 0, cy = 0;
+      for (const p of points) { cx += p.x; cy += p.y; }
+      cx /= points.length; cy /= points.length;
+      const C = { x: cx, y: cy };
+      return [...points].sort((p, q) => {
+        const ang1 = Math.atan2(p.y - C.y, p.x - C.x);
+        const ang2 = Math.atan2(q.y - C.y, q.x - C.x);
+        if (ang1 === ang2) {
+          const d1 = (p.x - C.x) ** 2 + (p.y - C.y) ** 2;
+          const d2 = (q.x - C.x) ** 2 + (q.y - C.y) ** 2;
+          return d1 - d2;
+        }
+        return ang1 - ang2;
+      });
+    }
+
+    function buildPolygonFromRaw() {
+      const method = selMethod ? selMethod.value : 'graham';
+      if (rawPoints.length < 3) return [...rawPoints];
+      if (method === 'graham')    return grahamHull(rawPoints);
+      if (method === 'xmonotone') return xMonotone(rawPoints);
+      if (method === 'ymonotone') return yMonotone(rawPoints);
+      return starShaped(rawPoints);
+    }
+
+    // ---------- Convexidad (se detiene en el primer no convexo) ----------
+
+    function computeConvexity(poly) {
+      const n = poly.length;
+      const steps = [];
+      if (n < 3) return { isConvex: null, steps: [] };
+
+      let firstSign = 0;
+      let allConvex = true;
+
+      for (let idx = 0; idx < n; idx++) {
+        const vl = (idx - 1 + n) % n;
+        const vr = (idx + 1) % n;
+        const a = poly[vl];
+        const b = poly[idx];
+        const c = poly[vr];
+
+        const s = area2(a, b, c);
+        let convex = true;
+
+        if (s !== 0) {
+          const sign = s > 0 ? 1 : -1;
+          if (firstSign === 0) {
+            firstSign = sign;
+          } else if (sign !== firstSign) {
+            convex = false;
+          }
+        }
+
+        steps.push({ idx, convex });
+        if (!convex) {
+          allConvex = false;
+          // paramos en el primer vértice no convexo
+          break;
+        }
+      }
+      return { isConvex: allConvex, steps };
+    }
+
+    function resetConvexity() {
+      convexitySteps = [];
+      convexGlobal   = null;
+      convexStepIdx  = 0;
+      if (convexityStepWrapper) convexityStepWrapper.style.display = 'none';
+      if (convexitySummary) convexitySummary.innerHTML = '';
+    }
+
+    // ---------- Tangentes (usando cierre convexo tipo Graham) ----------
+
+    function computeTangentsForCurrent() {
+      if (!polygon || polygon.length < 2 || !testPoint) {
+        return { hull: null, tangents: [], pointInside: false };
+      }
+
+      const hull = grahamHull(polygon);
+      const pointInside = pointInPolygon(hull, testPoint);
+      if (pointInside) {
+        return { hull, tangents: [], pointInside: true };
+      }
+
+      const n = hull.length;
+      const tangents = [];
+      const visited = new Set();
+
+      for (let i = 0; i < n; i++) {
+        const v_prev = hull[(i - 1 + n) % n];
+        const v      = hull[i];
+        const v_next = hull[(i + 1) % n];
+
+        const s1 = area2(v_prev, v, testPoint);
+        const s2 = area2(v, v_next, testPoint);
+
+        const left1 = s1 >= 0;
+        const left2 = s2 >= 0;
+        const isTangent = (left1 !== left2);
+
+        if (isTangent) {
+          const key = v.x + ',' + v.y;
+          if (!visited.has(key)) {
+            visited.add(key);
+            const qx = testPoint.x, qy = testPoint.y;
+            const vx = v.x,        vy = v.y;
+            const dx = vx - qx;
+            const dy = vy - qy;
+            const factor = 0.6;
+            const ext = { x: vx + factor*dx, y: vy + factor*dy };
+            tangents.push({ vertex: v, ext });
+            if (tangents.length === 2) break;
+          }
+        }
+      }
+
+      return { hull, tangents, pointInside: false };
+    }
+
+    // ---------- Dibujo ----------
+
+    function drawGrid() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const divs = 6; // para -3,-2,-1,1,2,3
+
+      ctx.save();
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+
+      const stepX = w / divs;
+      const stepY = h / divs;
+
+      for (let i = 1; i < divs; i++) {
+        const x = i * stepX;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+
+      for (let i = 1; i < divs; i++) {
+        const y = i * stepY;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function draw() {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      drawGrid();
+
+      const polyToDraw = polygon.length ? polygon : rawPoints;
+
+      // Polígono / nube
+      if (polyToDraw.length >= 2) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(polyToDraw[0].x, polyToDraw[0].y);
+        for (let i = 1; i < polyToDraw.length; i++) {
+          ctx.lineTo(polyToDraw[i].x, polyToDraw[i].y);
+        }
+        if (polygon.length >= 3) ctx.closePath();
+        ctx.fillStyle = 'rgba(96, 165, 250, 0.35)';
+        ctx.strokeStyle = 'rgba(37, 99, 235, 0.9)';
+        ctx.lineWidth = 2;
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // vértices
+      ctx.save();
+      for (const p of polyToDraw) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = '#1d4ed8';
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // Convexidad: solo en modo convexity
+      if (interactionMode === 'convexity' &&
+          polygon.length >= 3 &&
+          convexitySteps.length > 0) {
+
+        const n = polygon.length;
+        const step = convexitySteps[Math.min(convexStepIdx, convexitySteps.length - 1)];
+        const idx = step.idx;
+        const vl = (idx - 1 + n) % n;
+        const vr = (idx + 1) % n;
+
+        const a = polygon[vl];
+        const b = polygon[idx];
+        const c = polygon[vr];
+        const color = step.convex ? '#16a34a' : '#dc2626';
+
+        ctx.save();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.lineTo(c.x, c.y);
+        ctx.stroke();
+
+        function bigPoint(p, fill) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 7, 0, 2 * Math.PI);
+          ctx.fillStyle = fill;
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'white';
+          ctx.stroke();
+        }
+
+        bigPoint(a, '#1d4ed8');
+        bigPoint(c, '#1d4ed8');
+        bigPoint(b, color);
+        ctx.restore();
+      }
+
+      // Punto en polígono (modo POINT) con rayo tipo Sage m -> M -> q
+      if (interactionMode === 'point' &&
+          testPoint && polygon.length >= 3) {
+
+        const inside = pointInPolygon(polygon, testPoint);
+
+        // 1) vértice con mayor abscisa (m)
+        let m = polygon[0];
+        for (const p of polygon) {
+          if (p.x > m.x || (p.x === m.x && p.y > m.y)) {
+            m = p;
+          }
+        }
+
+        // 2) punto M = m + (1, 0.01) en coordenadas de pantalla
+        const M = {
+          x: m.x + 80,                  // desplazamiento visible en x
+          y: m.y - canvas.height*0.01  // pequeño desplazamiento en y
+        };
+
+        // dibujamos m y M
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, 5, 0, 2*Math.PI);
+        ctx.fillStyle = '#1d4ed8';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(M.x, M.y, 5, 0, 2*Math.PI);
+        ctx.fillStyle = '#1d4ed8';
+        ctx.fill();
+        ctx.restore();
+
+        // segmento m–M
+        ctx.save();
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(m.x, m.y);
+        ctx.lineTo(M.x, M.y);
+        ctx.stroke();
+        ctx.restore();
+
+        // rayo M–q
+        ctx.save();
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = '#4b5563';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(M.x, M.y);
+        ctx.lineTo(testPoint.x, testPoint.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+
+        // punto q
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(testPoint.x, testPoint.y, 6, 0, 2 * Math.PI);
+        ctx.fillStyle = inside ? '#16a34a' : '#dc2626';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Tangentes (modo TANGENT)
+      if (interactionMode === 'tangent' &&
+          polygon.length >= 2 &&
+          testPoint) {
+
+        const { hull, tangents, pointInside } = computeTangentsForCurrent();
+
+        if (hull && hull.length >= 2) {
+          // dibujamos el cierre convexo
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(hull[0].x, hull[0].y);
+          for (let i = 1; i < hull.length; i++) {
+            ctx.lineTo(hull[i].x, hull[i].y);
+          }
+          ctx.closePath();
+          ctx.strokeStyle = '#0f172a';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 3]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.restore();
+        }
+
+        // punto q
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(testPoint.x, testPoint.y, 6, 0, 2*Math.PI);
+        ctx.fillStyle = pointInside ? '#dc2626' : '#16a34a';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+        ctx.restore();
+
+        if (!pointInside) {
+          ctx.save();
+          ctx.strokeStyle = '#a855f7';
+          ctx.lineWidth = 2;
+          for (const t of tangents) {
+            ctx.beginPath();
+            ctx.moveTo(testPoint.x, testPoint.y);
+            ctx.lineTo(t.ext.x, t.ext.y);
+            ctx.stroke();
+
+            // vértice de tangencia
+            ctx.beginPath();
+            ctx.arc(t.vertex.x, t.vertex.y, 6, 0, 2*Math.PI);
+            ctx.fillStyle = '#a855f7';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#a855f7';
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+      }
+    }
+
+    // ---------- Estado ----------
+
+    function updateStatus() {
+      if (!statusBox) return;
+
+      const nRaw = rawPoints.length;
+      const nPoly = polygon.length;
+
+      let modoTxt;
+      if (interactionMode === 'build')      modoTxt = 'construir polígono';
+      else if (interactionMode === 'point') modoTxt = 'punto en polígono';
+      else if (interactionMode === 'convexity') modoTxt = 'convexidad';
+      else modoTxt = 'tangentes';
+
+      let html = `Modo actual: <b>${modoTxt}</b>. `;
+      if (interactionMode === 'build') {
+        html += 'Haz clic en la zona inferior para añadir puntos.';
+      } else if (interactionMode === 'point') {
+        html += 'Haz clic en la zona inferior para colocar puntos rojos.';
+      } else if (interactionMode === 'convexity') {
+        html += 'Usa el botón "Analizar convexidad" y luego el deslizador.';
+      } else {
+        html += 'Haz clic para elegir un punto exterior y ver las tangentes.';
+      }
+
+      html += `<br>Puntos clicados: <b>${nRaw}</b>.`;
+      if (nPoly >= 3) {
+        const area = polygonSignedArea(polygon);
+        const areaAbs = Math.abs(area);
+        html += ` Polígono con <b>${nPoly}</b> vértices. `
+              + `Área signada: <b>${area.toFixed(2)}</b>, `
+              + `área: <b>${areaAbs.toFixed(2)}</b>.`;
+      }
+
+      const method = selMethod ? selMethod.value : 'graham';
+      const nombre = method === 'graham'
+        ? 'Graham (envolvente convexa)'
+        : method === 'xmonotone'
+          ? 'monótono respecto a x'
+          : method === 'ymonotone'
+            ? 'monótono respecto a y'
+            : 'estrellado';
+      html += `<br>Método de cierre seleccionado: <b>${nombre}</b>.`;
+
+      if (testPoint && polygon.length >= 3) {
+        const lc = logicalCoords(testPoint);
+        const inside = pointInPolygon(polygon, testPoint);
+        const pos = inside ? 'INTERIOR' : 'EXTERIOR';
+        html += `<br>Último punto: <b>(${lc.x.toFixed(2)}, ${lc.y.toFixed(2)})</b> `
+              + `en escala [-3,3]. Respecto al polígono: <b>${pos}</b>.`;
+      }
+
+      // info extra para modo tangentes
+      if (interactionMode === 'tangent' && polygon.length >= 3 && testPoint) {
+        const { hull, tangents, pointInside } = computeTangentsForCurrent();
+        if (!hull) {
+          html += '<br>No hay cierre convexo definido.';
+        } else if (pointInside) {
+          html += '<br>El punto está en el interior del cierre convexo: no hay tangentes exteriores.';
+        } else {
+          html += `<br>Tangentes encontradas: <b>${tangents.length}</b>.`;
+        }
+      }
+
+      statusBox.innerHTML = html;
+
+      if (convexitySummary) {
+        if (convexGlobal === null) {
+          convexitySummary.innerHTML = '';
+        } else {
+          const txt = convexGlobal ? 'Polígono <b>CONVEXO</b>.' : 'Polígono <b>NO CONVEXO</b>.';
+          convexitySummary.innerHTML = txt +
+            (convexitySteps.length
+              ? ` (se ha detectado en el vértice ${convexitySteps[convexitySteps.length-1].idx + 1}).`
+              : '');
+        }
+      }
+    }
+
+    // ---------- Eventos ----------
+
+    canvas.addEventListener('click', ev => {
+      const rect = canvas.getBoundingClientRect();
+      const x = ev.clientX - rect.left;
+      const y = ev.clientY - rect.top;
+      const point = { x, y };
+
+      if (interactionMode === 'build') {
+        if (rawPoints.length === 0 ||
+            dist(point, rawPoints[rawPoints.length - 1]) > 3) {
+          rawPoints.push(point);
+        }
+        polygon = [];
+        testPoint = null;
+        resetConvexity();
+      } else if (interactionMode === 'point' || interactionMode === 'tangent') {
+        if (polygon.length < 3) {
+          alert('Primero construye y cierra un polígono.');
+          return;
+        }
+        testPoint = point;
+      }
+      draw();
+      updateStatus();
+    });
+
+    if (btnClose) {
+      btnClose.addEventListener('click', () => {
+        if (rawPoints.length < 3) {
+          alert('Necesitas al menos 3 puntos para formar un polígono.');
+          return;
+        }
+        polygon = buildPolygonFromRaw();
+        testPoint = null;
+        resetConvexity();
+        draw();
+        updateStatus();
+      });
+    }
+
+    if (btnReset) {
+      btnReset.addEventListener('click', () => {
+        rawPoints = [];
+        polygon   = [];
+        testPoint = null;
+        interactionMode = 'build';
+        if (selMode) selMode.value = 'build';
+        resetConvexity();
+        draw();
+        updateStatus();
+      });
+    }
+
+    if (selMode) {
+      selMode.addEventListener('change', () => {
+        interactionMode = selMode.value;
+        if (interactionMode === 'convexity' &&
+            convexitySteps.length > 0 &&
+            convexityStepWrapper) {
+          convexityStepWrapper.style.display = 'block';
+        } else if (convexityStepWrapper) {
+          convexityStepWrapper.style.display = 'none';
+        }
+        draw();
+        updateStatus();
+      });
+    }
+
+    if (btnAnalyzeConvexity) {
+      btnAnalyzeConvexity.addEventListener('click', () => {
+        if (polygon.length < 3) {
+          alert('Primero construye y cierra un polígono (al menos 3 vértices).');
+          return;
+        }
+        const res = computeConvexity(polygon);
+        convexitySteps = res.steps;
+        convexGlobal   = res.isConvex;
+        convexStepIdx  = 0;
+
+        if (convexitySteps.length > 0 && convexityStepWrapper && convexityStepSlider) {
+          convexityStepWrapper.style.display = 'block';
+          convexityStepSlider.min = 0;
+          convexityStepSlider.max = convexitySteps.length - 1;
+          convexityStepSlider.value = 0;
+        }
+        interactionMode = 'convexity';
+        if (selMode) selMode.value = 'convexity';
+
+        draw();
+        updateStatus();
+      });
+    }
+
+    if (convexityStepSlider) {
+      convexityStepSlider.addEventListener('input', () => {
+        convexStepIdx = parseInt(convexityStepSlider.value, 10) || 0;
+        draw();
+      });
+    }
+
+    draw();
+    updateStatus();
+  });
+</script>
+
   </body>
 </html>
