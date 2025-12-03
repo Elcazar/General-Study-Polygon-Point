@@ -880,11 +880,10 @@ class Polygon:
     def convex_hull(self):
         return ConvexPolygon.from_points(self.points)
     
-    def point_in_polygon(self, point):
+    def point_in_polygon(self, q):
         P = self.points
         m = max(P)
         M = [m[0]+1,m[1]+0.001*random()]
-        print(M)
         if q in P:
             sol = true
         else:
@@ -897,6 +896,58 @@ class Polygon:
             else:
                 sol=true
         return sol
+    
+    def area(self):
+        p = self.points
+        area = 0
+        for i in range(1,len(p)-1):
+            area += areaSignada(p[0],p[i],p[i+1])
+        return area
+    
+    def get_diagonals(self):
+        P = self.points
+        n = len(P)
+        internas = []
+        externas = []
+
+        if n < 4:
+            # Un triángulo no tiene diagonales
+            return internas, externas
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                
+                if j == i + 1:
+                    continue
+                if i == 0 and j == n - 1:
+                    continue
+
+                p = P[i]
+                q = P[j]
+
+                es_diagonal = True
+                for k in range(n):
+                    a = P[k]
+                    b = P[(k + 1) % n]
+
+                    if k == i or (k + 1) % n == i or k == j or (k + 1) % n == j:
+                        continue
+
+                    if testInterseccionSegmentos([p, q], [a, b]):
+                        es_diagonal = False
+                        break
+
+                if not es_diagonal:
+                    continue
+                    
+                mid = puntoMedio(p, q)
+
+                if self.point_in_polygon(mid):
+                    internas.append((i, j))
+                else:
+                    externas.append((i, j))
+
+        return internas, externas
 
 
 class ConvexPolygon(Polygon):
@@ -949,6 +1000,56 @@ class ConvexPolygon(Polygon):
                 if s * ref < 0:
                     return false
         return true
+
+    def is_tangent(self, p, i):
+        v_prev = self.points[i-1]
+        v      = self.points[i]
+        v_next = self.points[(i+1) % len(self.points)]
+
+        s1 = areaSignada(v_prev, v,     p)
+        s2 = areaSignada(v,      v_next, p)
+
+        left_on_1 = (s1 >= 0)
+        left_on_2 = (s2 >= 0)
+
+        return left_on_1 != left_on_2
+
+    
+    def get_tangents(self, p):
+        if self.point_in_convex(p):
+            return None
+
+        tangents = []
+        n = len(self.points)
+
+        for i in range(n):
+            if self.is_tangent(p, i):
+                tangents.append(self.points[i])
+                if len(tangents) == 2:
+                    return tangents
+
+        return None
+    
+    def get_convex_diagonals(self):
+        n = len(self.points)
+        internas = []
+        externas = []  
+
+        if n < 4:
+            # Un triángulo no tiene diagonales
+            return internas, externas
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                if j == i + 1:
+                    continue
+                if i == 0 and j == n - 1:
+                    continue
+
+                # En un polígono convexo cualquier par no adyacente es diagonal interna
+                internas.append((i, j))
+
+        return internas, externas
 
 
 class PolygonHandler:
@@ -1051,6 +1152,33 @@ selected_point = None
         De este modo, constituye un apoyo tanto para la docencia de geometría computacional como para la exploración
         experimental de estructuras poligonales a partir de datos.
       </p>
+    </section>
+
+    <section>
+      <div class="card theory-card">
+        <details class="theory-details">
+          <summary class="theory-summary">
+            <span class="theory-icon">a</span>
+            <span class="theory-title">Aplicaciones de la Geometría Computacional en general</span>
+            <span class="theory-chevron">▾</span>
+          </summary>
+
+          <div class="theory-content">
+              <section>
+                <p>
+                  La asignatura destaca que la Geometría Computacional aparece en informática gráfica y reconstrucción de modelos 3D, donde se necesitan algoritmos eficientes para manejar mallas y escenas complejas. También es fundamental en visión artificial y sistemas de información geográfica (SIG), para reconocer formas, analizar mapas y gestionar grandes bases de datos espaciales. Otros ámbitos señalados son la robótica (planificación y navegación), el diseño asistido por ordenador (CAD) y procesos de fabricación, así como áreas científicas como biología molecular y astrofísica, donde se estudian estructuras geométricas de datos experimentales.
+                </p>
+                <p>
+                  <strong>Fuente:</strong>
+                  <a href="https://medium.com/%40sakshishakhawar/applications-of-computational-geometry-algorithms-d0b808fdb3d5"
+                    target="_blank" rel="noopener noreferrer">
+                    Medium: Applications of Computational Geometry Algorithms
+                  </a>
+                </p>
+              </section>
+          </div>
+        </details>
+      </div>
     </section>
 
 
@@ -1306,7 +1434,7 @@ def applet_nube(
                       label="N puntos"),
     metodo   = selector(["gaussian", "random"],
                         label="Método"),
-    poligo   = selector(["Graham", "Monótono x", "Monótono y", "Estrellado"],
+    poligo   = selector(["Monótono y", "Monótono x", "Graham", "Estrellado"],
                         label="Poligonización"),
     actualizar = checkbox(True, label="Actualizar")
 ):
@@ -1680,7 +1808,6 @@ else:
         </div>
       </section>
 
-
       <!-- APPLET  4 -->
       <section>
         <div class="card">
@@ -1842,6 +1969,34 @@ else:
 </div>
       </section>
 
+      <section>
+        <div class="card theory-card">
+          <details class="theory-details">
+            <summary class="theory-summary">
+              <span class="theory-icon">a</span>
+              <span class="theory-title">Aplicaciones de la convexidad (cierres convexos)</span>
+              <span class="theory-chevron">▾</span>
+            </summary>
+
+            <div class="theory-content">
+
+                <section>
+                  <p>
+                    El cierre convexo se utiliza para reducir problemas sobre una nube de puntos a sus “puntos exteriores”, por ejemplo al calcular el diámetro: la máxima distancia siempre se alcanza entre vértices de la envolvente convexa, lo que permite diseñar algoritmos más rápidos que la fuerza bruta. Sobre polígonos convexos, la estructura convexa permite explotar técnicas de rotación de calibres para obtener no solo el diámetro, sino también la anchura mínima del conjunto y pares antipodales relacionados con bandas soporte. Estas ideas sirven como base para muchos problemas de optimización geométrica y de análisis de formas en dos dimensiones.
+                  </p>
+                  <p>
+                    <strong>Fuente:</strong>
+                    <a href="https://grokipedia.com/page/Rotating_calipers"
+                      target="_blank" rel="noopener noreferrer">
+                      Grokipedia: Rotating Clapiers
+                    </a>
+                  </p>
+                </section>
+            </div>
+          </details>
+        </div>
+      </section>
+
     <hr>
 
       <section>
@@ -1935,11 +2090,8 @@ else:
               (mostrado en valor absoluto).
             </p>
           </div>
-
-          </div>
-
-<div class="compute-applet" id="applet5">
-  <script type="text/x-sage">
+            <div class="compute-applet" id="applet5">
+              <script type="text/x-sage">
 P = handler.get_selected()
 
 # ========== DUMMY: falta polígono ==========
@@ -2040,10 +2192,40 @@ else:
                 f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
             ))
 
-  </script>
-</div>
+              </script>
+            </div>
+          </div>
+
+
       </section>
 
+      <section>
+        <div class="card theory-card">
+          <details class="theory-details">
+            <summary class="theory-summary">
+              <span class="theory-icon">a</span>
+              <span class="theory-title">Aplicaciones de área (área signada)</span>
+              <span class="theory-chevron">▾</span>
+            </summary>
+
+            <div class="theory-content">
+
+                <section>
+                  <p>
+                    El área signada de un triángulo se usa como predicado geométrico básico: permite localizar un punto respecto de una recta (saber si está a la izquierda, derecha o alineado con dos puntos dados) sin recurrir a trigonometría. También se emplea para comparar un ángulo con π y evitar funciones trigonométricas aproximadas. Otro uso importante es la clasificación de vértices de un polígono en convexos o cóncavos mediante el signo de Δ(v<sub>i−1</sub>, v<sub>i</sub>, v<sub>i+1</sub>). Finalmente, la suma de áreas signadas de triángulos permite calcular de forma sistemática el área de un polígono, tanto convexo como no convexo, a partir de sus vértices.
+                  </p>
+                  <p>
+                    <strong>Fuente:</strong>
+                    <a href="https://www.utdallas.edu/~daescu/convexhull.pdf"
+                      target="_blank" rel="noopener noreferrer">
+                      UTDALLAS: Orientations & Convex Hull Lecture
+                    </a>
+                  </p>
+                </section>
+            </div>
+          </details>
+        </div>
+      </section>
 
       <hr>
 
@@ -2084,7 +2266,7 @@ else:
 
           </div>
 
-<div class="compute-applet" id="applet4">
+<div class="compute-applet" id="applet6">
   <script type="text/x-sage">
 P = handler.get_selected()
 
@@ -2139,27 +2321,116 @@ else:
       </section>
 
 
+      <hr>
       <section>
-        <h2>Discusión</h2>
-        <p>
-            SEPARADOR
-        </p>
+        <h2>Punto en Polígono</h2>
+<p>
+  En esta sección estudiamos la posición relativa de un punto respecto a un polígono.
+  Distinguimos entre el caso <b>convexo</b> (donde basta analizar el signo de las áreas
+  orientadas) y el caso <b>no convexo</b>, en el que utilizamos un algoritmo de
+  <i>ray casting</i> para decidir si el punto queda en el interior o en el exterior.
+</p>
       </section>
 
-      <!-- APPLET 5  -->
+
+<div class="card theory-card">
+  <details class="theory-details">
+    <summary class="theory-summary">
+      <span class="theory-icon">i</span>
+      <span class="theory-title">Punto en polígono convexo</span>
+      <span class="theory-chevron">▾</span>
+    </summary>
+
+    <div class="theory-content">
+
+      <h4>Criterio del signo constante</h4>
+      <p>
+        En un <b>polígono convexo</b>, la posición de un punto \(p\) se determina
+        comprobando el signo del área orientada
+        \(\Delta(a,b,p)\) para cada arista consecutiva \([a,b]\).
+      </p>
+
+      <p style="text-align:center; font-size:0.95rem;">
+        \[
+          s_i
+          = \Delta\bigl(v_i,\; v_{i+1},\; p\bigr)
+          \qquad (i=0,\ldots,n-1)
+        \]
+      </p>
+
+      <p>
+        Si todos los valores \(s_i\) tienen el <b>mismo signo</b> (o si alguno
+        es cero porque el punto está justo sobre un lado), entonces el punto se
+        encuentra en el <b>interior</b> del polígono convexo.  
+        En cuanto aparece un <b>cambio de signo</b>, el punto queda clasificado
+        como <b>exterior</b>.
+      </p>
+    </div>
+  </details>
+</div>
+
+<div class="card theory-card">
+  <details class="theory-details">
+    <summary class="theory-summary">
+      <span class="theory-icon">i</span>
+      <span class="theory-title">Punto en polígono no convexo</span>
+      <span class="theory-chevron">▾</span>
+    </summary>
+
+    <div class="theory-content">
+
+      <h4>Método del ray casting</h4>
+      <p>
+        Para determinar si un punto \(p\) pertenece al <b>interior</b> de un
+        polígono no convexo, se utiliza el algoritmo de
+        <i>ray casting</i>.  
+        Consiste en trazar un rayo desde un punto exterior \(M\) hasta \(p\) y
+        contar cuántas veces intersecta con los lados del polígono.
+      </p>
+
+      <p style="text-align:center; font-size:0.95rem;">
+        \[
+          \text{intersecciones} =
+          \#\bigl([M,p] \cap [v_i,v_{i+1}]\bigr)
+        \]
+      </p>
+
+      <p>
+        Si el número de intersecciones es <b>impar</b>, el punto está en el
+        <b>interior</b>.  
+        Si es <b>par</b>, el punto está en el <b>exterior</b>.
+      </p>
+
+      <h4>Ventaja del método</h4>
+      <p>
+        Este procedimiento permite trabajar con polígonos <b>no convexos</b>,
+        con <b>entrantes</b>, y en general con cualquier polígono simple.
+      </p>
+
+    </div>
+  </details>
+</div>
+
+      <!-- APPLET 7  -->
       <section>
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Applet 5 · Punto en polígono</div>
+            <div class="card-title">Applet 7 · Punto en polígono</div>
             <span class="card-tag">Geometría</span>
           </div>
           <div class="card-body">
-            <p>
-              BODY CARD
-            </p>
+<p>
+  Elige primero un polígono en el <b>Applet 2</b> y un punto en el <b>Applet 4</b>.
+  Este applet aplica automáticamente el algoritmo adecuado:
+  si el polígono es convexo, recorre sus lados comprobando el signo del área orientada;
+  si no lo es, ejecuta un método de <i>ray casting</i> contando intersecciones con un rayo.
+  Con el deslizador puedes seguir el proceso paso a paso y ver cómo se decide si el punto
+  es <b>interior</b> o <b>exterior</b>.
+</p>
+
           </div>
 
-<div class="compute-applet" id="applet4">
+<div class="compute-applet" id="applet7">
   <script type="text/x-sage">
 
 P = handler.get_selected()
@@ -2306,26 +2577,117 @@ else:
       </section>
 
       <section>
-        <h2>Discusión</h2>
-        <p>
-            SEPARADOR
-        </p>
+        <div class="card theory-card">
+          <details class="theory-details">
+            <summary class="theory-summary">
+              <span class="theory-icon">a</span>
+              <span class="theory-title">Aplicaciones de punto en polígono</span>
+              <span class="theory-chevron">▾</span>
+            </summary>
+
+            <div class="theory-content">
+
+                <section>
+                  <p>
+                    Los algoritmos de localización de un punto en un polígono se aplican en SIG para saber a qué zona pertenece una ubicación, en gráficos por ordenador para pruebas de “picking” o selección, y en robótica o planificación para decidir si una posición está dentro de un obstáculo poligonal o en una zona libre. También son la base para estructuras de búsqueda espacial más complejas, como mapas trapezoidales o subdivisiones jerárquicas.
+                  </p>
+                  <p>
+                    <strong>Fuente:</strong>
+                    <a href="https://www.geeksforgeeks.org/c/point-in-polygon-in-c/"
+                      target="_blank" rel="noopener noreferrer">
+                      GeeksForGeeks: Point in Polygon in C
+                    </a>
+                  </p>
+                </section>
+            </div>
+          </details>
+        </div>
+      </section>
+      
+<hr>
+
+      <section>
+        <h2>Rectas tangentes al polígono convexo</h2>
+<p>
+  En esta sección estudiamos las <b>rectas tangentes</b> desde un punto \(q\) exterior
+  a un polígono. Si el polígono no es convexo, primero trabajamos con su
+  <b>cierre convexo</b> para obtener las dos tangentes exteriores.
+</p>
+
       </section>
 
-      <!-- APPLET 6  -->
+      <section>  
+  <div class="card theory-card">
+    <details class="theory-details">
+      <summary class="theory-summary">
+        <span class="theory-icon">i</span>
+        <span class="theory-title">Criterio de tangencia en el cierre convexo</span>
+        <span class="theory-chevron">▾</span>
+      </summary>
+
+      <div class="theory-content">
+
+        <h4>Vértice candidato y prueba local</h4>
+        <p>
+          Para un polígono convexo \(P\) y un punto exterior \(q\), cada vértice
+          \(v_i\) se analiza junto con sus vecinos \(v_{i-1}\) y \(v_{i+1}\).
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          <b>
+            \(q - v_i\) es tangente a \(P\) si:
+          </b><br>
+          \(q\) está a la izquierda o sobre \((v_{i-1}, v_i)\)
+          <b style="color:#b91c1c;">xor</b>
+          \(q\) está a la izquierda o sobre \((v_i, v_{i+1})\).
+        </p>
+
+        <h4>Traducción con áreas orientadas</h4>
+        <p>
+          La condición “estar a la izquierda o sobre” se formula mediante el
+          <b>signo del área orientada</b>:
+        </p>
+
+        <p style="text-align:center; font-size:0.95rem;">
+          \[
+            s_1 = \Delta(v_{i-1}, v_i, q), \qquad
+            s_2 = \Delta(v_i, v_{i+1}, q).
+          \]
+        </p>
+
+        <p>
+          El vértice \(v_i\) define una tangente si exactamente una de las dos
+          condiciones \(s_1 \ge 0\) o \(s_2 \ge 0\) se cumple, esto es,
+          si los valores lógicos difieren (<b>xor</b>).  
+          En ese caso, el segmento \(qv_i\) toca al polígono en \(v_i\)
+          y no lo atraviesa, produciendo una de las dos tangentes exteriores.
+        </p>
+
+      </div>
+    </details>
+  </div>
+</section>
+
+      <!-- APPLET 8  -->
       <section>
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Applet 6 · Tangentes</div>
+            <div class="card-title">Applet 8 · Tangentes</div>
             <span class="card-tag">Geometría</span>
           </div>
           <div class="card-body">
-            <p>
-              BODY CARD
-            </p>
-          </div>
+<p>
+  Selecciona un polígono en el <b>Applet 2</b> y un punto en el <b>Applet 4</b>.
+  Este applet comprueba primero si el punto está dentro del cierre convexo:
+  en ese caso no existen tangentes exteriores.  
+  Si el punto es exterior, recorre los vértices del cierre convexo y detecta
+  aquellos en los que el segmento <code>q–v<sub>i</sub></code> es <b>tangente</b>
+  al polígono. Con el deslizador puedes seguir el proceso vértice a vértice
+  y visualizar las tangentes encontradas.
+</p>
 
-<div class="compute-applet" id="applet6">
+        </div>
+<div class="compute-applet" id="applet8">
   <script type="text/x-sage">
 
 P = handler.get_selected()
@@ -2589,6 +2951,922 @@ else:
   </script>
 </div>
       </section>
+
+      <section>
+        <div class="card theory-card">
+          <details class="theory-details">
+            <summary class="theory-summary">
+              <span class="theory-icon">a</span>
+              <span class="theory-title">Aplicaciones de tangentes de un polígono</span>
+              <span class="theory-chevron">▾</span>
+            </summary>
+
+            <div class="theory-content">
+
+                <section>
+                  <p>
+                    Las tangentes punto-polígono aparecen en problemas de visibilidad y planificación de trayectorias, por ejemplo para rodear un obstáculo poligonal siguiendo caminos más cortos. También son útiles en detección de colisiones y en el cálculo de rectas soporte de cuerpos convexos, paso previo a muchos algoritmos de optimización geométrica. En contextos más avanzados, las tangentes se usan para construir tangentes comunes entre polígonos convexos, fundamentales en problemas de envolventes y de separación de conjuntos.
+                  </p>
+                  <p>
+                    <strong>Fuente:</strong>
+                    <a href="https://www.sciencedirect.com/science/article/abs/pii/0020019088900221"
+                      target="_blank" rel="noopener noreferrer">
+                      ScienceDirect: Algorithms For Shortest Paths Between Convex Polygons
+                    </a>
+                  </p>
+                </section>
+            </div>
+          </details>
+        </div>
+      </section>
+
+
+<hr>
+
+      <section>
+        <h2>Diagonales de un polígono</h2>
+<p>
+<section>
+  <p>
+    Dada una poligonal simple \(P\) con vértices \(v_0, v_1, \dots, v_{n-1}\) en orden,
+    llamamos <b>diagonal</b> a cualquier segmento que une dos vértices no consecutivos
+    y que no coincide con el lado que cierra el polígono.  
+    En un polígono <b>convexo</b> todas las diagonales son interiores, mientras que
+    en un polígono <b>cóncavo</b> pueden aparecer diagonales que salen total o
+    parcialmente al exterior.
+  </p>
+</section>
+
+</p>
+
+      </section>
+
+      <section>  
+  <div class="card theory-card">
+    <details class="theory-details">
+      <summary class="theory-summary">
+        <span class="theory-icon">i</span>
+        <span class="theory-title">Criterio de diagonalización</span>
+        <span class="theory-chevron">▾</span>
+      </summary>
+
+<div class="theory-content">
+        
+  <h4>Segmento candidato</h4>
+  <p>
+    Sea \(P\) un polígono simple con vértices \(v_0, \dots, v_{n-1}\) en orden.
+    Un par de índices \((i,j)\) con \(i &lt; j\) genera un <b>segmento candidato</b>
+    \([v_i, v_j]\) si:
+  </p>
+
+  <ul>
+    <li>\(j \ne i+1\) (no son vértices consecutivos),</li>
+    <li>\((i,j) \ne (0,n-1)\) (no es el lado que cierra el polígono).</li>
+  </ul>
+
+  <p>
+    Para cada segmento candidato comprobaremos primero si es realmente una
+    <b>diagonal</b> (no corta al polígono), y en ese caso decidiremos si es
+    <b>interna</b> o <b>externa</b>.
+  </p>
+
+  <h4>Paso 1 · ¿Es una diagonal?</h4>
+  <p>
+    El segmento \([v_i, v_j]\) es una diagonal válida de \(P\) si no corta a
+    ninguna arista del polígono distinta de las que comparten extremos con
+    \(v_i\) o \(v_j\).  
+    Operativamente:
+  </p>
+
+  <p style="text-align:center; font-size:0.95rem;">
+    \[
+      [v_i, v_j] \text{ es diagonal} \quad \Longleftrightarrow \quad
+      [v_i, v_j] \text{ no intersecta } [v_k, v_{k+1}]
+      \text{ para ningún } k
+    \]
+  </p>
+
+  <p>
+    En el código esto se implementa con la función
+    <code>testInterseccionSegmentos</code>: si detecta una intersección con
+    alguna arista “no adyacente”, descartamos el segmento como diagonal.
+  </p>
+
+  <h4>Paso 2 · Diagonal interna vs externa</h4>
+  <p>
+    Una vez sabemos que \([v_i, v_j]\) es una diagonal, basta mirar un punto
+    interior del segmento, por ejemplo su <b>punto medio</b>:
+  </p>
+
+  <p style="text-align:center; font-size:0.95rem;">
+    \[
+      m = \frac{v_i + v_j}{2}.
+    \]
+  </p>
+
+  <p>
+    Usamos el algoritmo de <b>punto en polígono</b>:
+  </p>
+
+  <ul>
+    <li>Si <code>point_in_polygon(m)</code> es verdadera, la diagonal es <b>interna</b>.</li>
+    <li>Si <code>point_in_polygon(m)</code> es falsa, la diagonal es <b>externa</b>.</li>
+  </ul>
+
+  <p>
+    En un polígono convexo todos los segmentos candidatos que no son lados son
+    diagonales <b>internas</b>. En un polígono cóncavo, en cambio, el algoritmo
+    distingue entre diagonales internas (verde) y externas (naranja).
+  </p>
+
+</div>
+
+    </details>
+  </div>
+</section>
+
+      <!-- APPLET 9  -->
+      <section>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Applet 9 · Diagonales</div>
+            <span class="card-tag">Geometría</span>
+          </div>
+          <div class="card-body">
+<p>
+<p>
+  Selecciona un polígono en el <b>Applet 2</b>. Este applet muestra todas sus
+  diagonales, explicando paso a paso cómo se determinan.
+</p>
+
+<p>
+  Si el polígono es <b>convexo</b>, se dibujan sus diagonales internas en verde,
+  en el orden en que el algoritmo recorre los vértices.
+</p>
+
+<p>
+  Si es <b>cóncavo</b>, cada diagonal se analiza en tres pasos:
+</p>
+
+<ul>
+  <li>Propuesta de la diagonal (gris),</li>
+  <li>Punto medio (<span style="color:red;"><b>rojo</b></span>),</li>
+  <li>Clasificación final: <span style="color:green;"><b>verde</b></span> si es interna,
+     <span style="color:orange;"><b>naranja</b></span> si es externa.</li>
+</ul>
+
+<p>
+  El deslizador permite visualizar el proceso completo, igual que en el Applet 8.
+</p>
+
+</p>
+
+        </div>
+<div class="compute-applet" id="applet9">
+  <script type="text/x-sage">
+
+P = handler.get_selected()
+# ========== DUMMY: falta polígono ==========
+if P is None:
+    pretty_print(html(
+        "<h3 style='text-align:center;'>"
+        "No hay seleccionado ningún polígono."
+        "</h3>"
+    ))
+
+    @interact
+    def applet_diagonales_dummy():
+        pretty_print(html(
+            "<span style='font-size:0.9rem; color:#666;'>"
+            "Selecciona primero un polígono en el Applet 2."
+            "</span>"
+        ))
+
+else:
+    pts = P.points
+    n   = len(pts)
+
+    # ========== Polígono demasiado pequeño ==========
+    if n < 3:
+        pretty_print(html(
+            "<h3 style='text-align:center;'>"
+            "El polígono tiene menos de 3 puntos."
+            "</h3>"
+        ))
+
+        @interact
+        def applet_diagonales_dummy2():
+            pretty_print(html(
+                "<span style='font-size:0.9rem; color:#666;'>"
+                "Necesitas al menos un triángulo para tener diagonales."
+                "</span>"
+            ))
+
+    else:
+        # Comprobamos convexidad una sola vez
+        es_convexo = P.is_convex()   # rellena también P.convex_steps
+
+        # ================== CASO CONVEXO ==================
+        if es_convexo:
+            pretty_print(html(
+                "<h3 style='text-align:center;'>"
+                "Polígono convexo: diagonales internas."
+                "</h3>"
+            ))
+
+            # Usamos get_convex_diagonals si está definido, si no get_diagonals
+            if hasattr(P, "get_convex_diagonals"):
+                internas, externas = P.get_convex_diagonals()
+            else:
+                internas, externas = P.get_diagonals()
+
+            set_internas = set(internas)
+            ordered_diags = []
+
+            for i in range(n):
+                for j in range(i + 1, n):
+                    # saltar lados
+                    if j == i + 1:
+                        continue
+                    if i == 0 and j == n - 1:
+                        continue
+
+                    if (i, j) in set_internas:
+                        a = pts[i]
+                        b = pts[j]
+                        mid = puntoMedio(a, b)
+                        ordered_diags.append({"a": a, "b": b, "mid": mid})
+
+            max_k = len(ordered_diags)
+
+            @interact
+            def applet_diagonales_convexas(
+                k = slider(0, max_k, 1, default=0, label="Número de diagonales")
+            ):
+                # Polígono base en AZUL (como en el ejemplo del área)
+                g  = polygon(pts, alpha=0.30, rgbcolor=(0.65, 0.75, 1.00))
+                g += line(pts + [pts[0]],
+                          rgbcolor=(0.10, 0.20, 0.60),
+                          thickness=1)
+
+                # Dibujamos las primeras k diagonales internas (solo la línea verde)
+                for i in range(k):
+                    step = ordered_diags[i]
+                    a, b = step["a"], step["b"]
+                    # (mid existe pero NO se plotea)
+                    g += line([a, b], color="green", thickness=2)
+
+                show(g, aspect_ratio=1, axes=True, figsize=5)
+
+                if k == 0:
+                    msg = "Sin diagonales aún: mueve el deslizador para verlas en orden (0,2; 0,3; ...)."
+                else:
+                    msg = f"Mostrando {k} diagonal(es) interna(s) en verde."
+
+                pretty_print(html(
+                    f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
+                ))
+
+
+        # ================== CASO CÓNCAVO ==================
+        else:
+            pretty_print(html(
+                "<h3 style='text-align:center;'>"
+                "Polígono cóncavo: clasificación paso a paso de diagonales internas (verde) y externas (naranja)."
+                "</h3>"
+            ))
+
+            internas, externas = P.get_diagonals()
+
+            # Creamos un conjunto para clasificación rápida
+            set_internas = set(internas)
+            set_externas = set(externas)
+
+            # Reconstruimos el ORDEN del método: pares (i,j) no adyacentes
+            # en el mismo barrido que usaría get_diagonals: 0,2; 0,3; ...
+            ordered_diags = []
+            for i in range(n):
+                for j in range(i + 1, n):
+                    # saltar lados
+                    if j == i + 1:
+                        continue
+                    if i == 0 and j == n - 1:
+                        continue
+
+                    if (i, j) in set_internas:
+                        color_final = "green"
+                    elif (i, j) in set_externas:
+                        color_final = "orange"
+                    else:
+                        # no es diagonal válida (se descartó por cortes)
+                        continue
+
+                    a = pts[i]
+                    b = pts[j]
+                    mid = puntoMedio(a, b)
+
+                    ordered_diags.append({
+                        "a": a,
+                        "b": b,
+                        "mid": mid,
+                        "color": color_final
+                    })
+
+
+            step_data = []
+            for d in ordered_diags:
+                a, b, mid, col = d["a"], d["b"], d["mid"], d["color"]
+
+                step_data.append({"tipo": "diag",     "a": a, "b": b, "mid": mid, "color": col})
+                step_data.append({"tipo": "mid",      "a": a, "b": b, "mid": mid, "color": col})
+                step_data.append({"tipo": "classify", "a": a, "b": b, "mid": mid, "color": col})
+
+            max_k = len(step_data)
+
+            @interact
+            def applet_diagonales_concavas(
+                k = slider(0, max_k, 1, default=0, label="Paso")
+            ):
+                # Polígono base en AZUL (igual que el ejemplo del área)
+                g  = polygon(pts, alpha=0.30, rgbcolor=(0.65, 0.75, 1.00))
+                g += line(pts + [pts[0]],
+                          rgbcolor=(0.10, 0.20, 0.60),
+                          thickness=1)
+
+                # Vamos pintando lo que ya se ha hecho hasta el paso k
+                for i in range(k):
+                    step = step_data[i]
+                    a    = step["a"]
+                    b    = step["b"]
+                    mid  = step["mid"]
+                    col  = step["color"]
+
+                    if step["tipo"] == "diag":
+                        # Solo la diagonal candidata, gris
+                        g += line([a, b], color="gray", thickness=1)
+
+                    elif step["tipo"] == "mid":
+                        # Diagonal gris + punto medio rojo
+                        g += line([a, b], color="gray", thickness=1)
+                        g += point(mid, color="red", size=30)
+
+                    elif step["tipo"] == "classify":
+                        # Diagonal coloreada + punto medio rojo
+                        g += line([a, b], color=col, thickness=2)
+                        g += point(mid, color="red", size=30)
+
+                show(g, aspect_ratio=1, axes=True, figsize=5)
+
+                if k == 0:
+                    msg = ("Sin pasos aún")
+                else:
+                    ultimo = step_data[k-1]
+                    if ultimo["tipo"] == "classify":
+                        msg = ("Última diagonal clasificada como "
+                               f"<b>{'interna (verde)' if ultimo['color']=='green' else 'externa (naranja)'}</b>.")
+                    elif ultimo["tipo"] == "mid":
+                        msg = ("Se ha dibujado el punto medio de la diagonal candidata "
+                               "(aún sin decidir si es interna o externa).")
+                    else:
+                        msg = "Probando una nueva diagonal candidata (solo el segmento gris)."
+
+                pretty_print(html(
+                    f"<div style='text-align:center; font-size:0.95rem;'>{msg}</div>"
+                ))
+
+  </script>
+</div>
+      </section>
+
+      <section>
+        <div class="card theory-card">
+          <details class="theory-details">
+            <summary class="theory-summary">
+              <span class="theory-icon">a</span>
+              <span class="theory-title">Aplicaciones de diagonales de un polígono</span>
+              <span class="theory-chevron">▾</span>
+            </summary>
+
+            <div class="theory-content">
+
+                <section>
+                  <p>
+                    El cálculo de diagonales internas es el paso básico para triangulación de polígonos, que luego se utiliza en el cálculo de áreas, integración sobre regiones planas o discretización en métodos numéricos. También se emplea para descomponer polígonos generales en piezas más simples (por ejemplo, polígonos monótonos) sobre las que es más fácil realizar búsqueda de puntos o problemas de visibilidad. En polígonos convexos, las diagonales permiten definir estructuras adicionales como grafos duales de triangulaciones y sirven de base para algoritmos de optimización geométrica.
+                  </p>
+                  <p>
+                    <strong>Fuente:</strong>
+                    <a href="https://www.cs.umd.edu/class/spring2020/cmsc754/Lects/lect05-triangulate.pdf"
+                      target="_blank" rel="noopener noreferrer">
+                      CSUMD: Polygon Triangulation Lecture
+                    </a>
+                  </p>
+                </section>
+            </div>
+          </details>
+        </div>
+      </section>
+
+
+<hr>
+
+      <section>
+        <h2>Generación de Informe</h2>
+<p>
+</p>
+
+      </section>
+
+
+<section>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Applet 10 · Informe PDF </div>
+      <span class="card-tag">Exportar</span>
+    </div>
+
+    <div class="card-body">
+      <p>
+        Este módulo genera un <b>informe PDF </b> del polígono a partir de una
+        <b>lista de puntos</b> y de un <b>punto de consulta</b> \(q\).
+        El informe incluye: convexidad, área, posición del punto respecto al polígono
+        y tangentes desde \(q\).
+      </p>
+      <p>
+        Introduce la lista de vértices en formato Python/Sage, por ejemplo
+        <code>[(0,0),(2,0),(2,1),(0,1)]</code>, y el punto de estudio, por ejemplo, como
+        <code>[3,3]</code>. El nombre que elijas aparecerá en la portada del PDF.
+      </p>
+    </div>
+
+    <div class="compute-applet" id="applet9">
+      <script type="text/x-sage">
+
+from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.pyplot as plt
+
+def estudio_pdf_completo(lista_puntos, q,
+                         nombre_poligono="Polígono sin nombre",
+                         filename=None):
+
+    # ---------- nombre de fichero ----------
+    if filename is None:
+        safe = "".join(ch if ch.isalnum() or ch in " _-" else "_" for ch in nombre_poligono)
+        base_name = safe if safe else "Poligono"
+        filename = "Informe_Completo_{}.pdf".format(base_name)
+
+    # ---------- polígono base ----------
+    P = Polygon(lista_puntos)
+    pts = P.points
+    n   = len(pts)
+    q   = (RR(q[0]), RR(q[1]))
+
+    if n < 3:
+        raise ValueError("El polígono debe tener al menos 3 vértices.")
+
+    xs = [p[0] for p in pts]
+    ys = [p[1] for p in pts]
+    xmin, xmax = min(xs), max(xs)
+    ymin, ymax = min(ys), max(ys)
+    R = max(xmax - xmin, ymax - ymin) or 1
+
+    # rango común para todos los plots
+    x_min_plot = xmin - 0.3*R
+    x_max_plot = xmax + 0.3*R
+    y_max_plot = ymax + 0.2*R
+    y_min_plot = ymin - 0.3*R
+
+    def ajustar(g):
+        g.set_aspect_ratio(1)
+        g.set_axes_range(x_min_plot, x_max_plot, y_min_plot, y_max_plot)
+        return g
+
+    def add_title(g, texto):
+        # título dentro del gráfico, parte superior izquierda
+        xpos = x_min_plot + 0.05*R
+        ypos = y_max_plot - 0.08*R
+        g += text(texto, (xpos, ypos),
+                  fontsize=12, rgbcolor=(0,0,0))
+        return g
+
+    # =====================================================
+    # CÁLCULOS GLOBALES
+    # =====================================================
+
+    # --- Convexidad ---
+    es_convexo = P.is_convex()   # rellena P.convex_steps
+
+    # --- Área (triangulación respecto al primer vértice) ---
+    base = pts[0]
+    step_data_area = []
+    acum = 0
+    for i in range(1, n-1):
+        a = pts[i]
+        b = pts[i+1]
+        s = areaSignada(base, a, b)
+        acum += s
+        step_data_area.append(([base, a, b], s))
+    area_signed = acum
+    area_abs    = abs(acum)
+
+    # --- Punto en polígono: convexo ---
+    def test_convexo_point(P, q):
+        Ppts = P.points
+        n    = len(Ppts)
+        tri_data = []
+        ref = None
+        sign_changed = False
+        for i in range(n):
+            a = Ppts[i]
+            b = Ppts[(i+1) % n]
+            s = areaSignada(a, b, q)
+
+            if s == 0:
+                col = "green"
+                tri = [a, b, q]
+                interior_hasta_aqui = not sign_changed
+                tri_data.append((tri, col, interior_hasta_aqui))
+                continue
+
+            if ref is None:
+                ref = s
+            else:
+                if ref * s < 0:
+                    sign_changed = True
+
+            col = "green" if s >= 0 else "orange"
+            tri = [a, b, q]
+            interior_hasta_aqui = not sign_changed
+            tri_data.append((tri, col, interior_hasta_aqui))
+
+            if sign_changed:
+                break
+
+        dentro = tri_data[-1][2] if tri_data else False
+        return dentro, tri_data
+
+    # --- Punto en polígono: no convexo (ray casting) ---
+    def test_no_convexo_point(P, q):
+        Ppts = P.points
+        m = max(Ppts)
+        M = [m[0] + 1, m[1] + 0.001]
+        cont = 0
+        lados_info = []
+        for i in range(len(Ppts)):
+            a = Ppts[i-1]
+            b = Ppts[i]
+            inter = testInterseccionSegmentos([M, q], [a, b])
+            if inter:
+                cont += 1
+            lados_info.append((a, b, inter))
+        dentro = (cont % 2 == 1)
+        return dentro, (m, M, cont, lados_info)
+
+    # Ejecutar test de punto en polígono
+    if es_convexo:
+        punto_interior, tri_data_pp = test_convexo_point(P, q)
+        metodo_posicion = "test de convexidad"
+        data_rc         = None
+    else:
+        punto_interior, data_rc = test_no_convexo_point(P, q)
+        metodo_posicion = "ray casting"
+        tri_data_pp     = None
+
+    # --- Tangentes sobre cierre convexo ---
+    if es_convexo:
+        CP = ConvexPolygon(P.points)
+    else:
+        CP = P.convex_hull()
+
+    hull_pts = CP.points
+    n_h      = len(hull_pts)
+
+    tangentes   = []   # lista de (v, ext)
+    t_indices   = []   # índices del vértice en el polígono original
+    dentro_hull = False
+
+    if n_h >= 2:
+        dentro_hull = CP.point_in_convex(q)
+        if not dentro_hull:
+            visited = set()
+            for i in range(n_h):
+                v_prev = hull_pts[i-1]
+                v      = hull_pts[i]
+                v_next = hull_pts[(i+1) % n_h]
+
+                s1 = areaSignada(v_prev, v, q)
+                s2 = areaSignada(v, v_next, q)
+
+                left1 = (s1 >= 0)
+                left2 = (s2 >= 0)
+                es_tan_local = (left1 != left2)
+
+                if es_tan_local:
+                    key = (v[0], v[1])
+                    if key not in visited:
+                        visited.add(key)
+                        qx, qy = q[0], q[1]
+                        vx, vy = v[0], v[1]
+                        dx = vx - qx
+                        dy = vy - qy
+                        factor = RR('0.6')
+                        ext    = (vx + factor*dx, vy + factor*dy)
+                        tangentes.append((v, ext))
+                        # índice del vértice v en el polígono original pts
+                        try:
+                            idx_poly = pts.index(v)
+                        except ValueError:
+                            idx_poly = None
+                        t_indices.append(idx_poly)
+                        if len(tangentes) == 2:
+                            break
+
+    resumen_tangentes_breve = (
+        "no definibles (cierre convexo con menos de 2 puntos)"
+        if n_h < 2
+        else (
+            "no existen (punto interior al cierre convexo)"
+            if dentro_hull else
+            "{} tangente(s) exterior(es)".format(len(tangentes))
+        )
+    )
+
+    # =====================================================
+    # CONSTRUCCIÓN DE LOS GRÁFICOS (Sage Graphics)
+    # =====================================================
+
+    # 1) Polígono simple
+    g_poly = polygon(pts,
+                     alpha=0.40,
+                     rgbcolor=(0.65, 0.75, 1.00))
+    g_poly += line(pts + [pts[0]],
+                   rgbcolor=(0.10, 0.20, 0.60),
+                   thickness=2.5)
+    g_poly += point(pts,
+                    size=30,
+                    rgbcolor=(0.10, 0.20, 0.80))
+    g_poly = ajustar(g_poly)
+    # g_poly = add_title(g_poly, "Polígono base")
+
+    # 2) Convexidad
+    g_conv = polygon(pts,
+                     alpha=0.40,
+                     rgbcolor=(0.65, 0.75, 1.00))
+    g_conv += line(pts + [pts[0]],
+                   rgbcolor=(0.10, 0.20, 0.60),
+                   thickness=2.5)
+    
+    for idx, pt in enumerate(P.points):
+        convex = P.is_convex_point(idx)
+        col    = "green" if convex else "red"
+        g_conv += point(pt, size=50, rgbcolor=col)
+    g_conv = ajustar(g_conv)
+    # g_conv = add_title(g_conv, "Análisis de convexidad")
+
+    # 3) Área
+    g_area = polygon(pts,
+                     alpha=0.25,
+                     rgbcolor=(0.65, 0.75, 1.00))
+    g_area += line(pts + [pts[0]],
+                   rgbcolor=(0.10, 0.20, 0.60),
+                   thickness=2.5)
+    for tri, s in step_data_area:
+        col = "green" if s >= 0 else "orange"
+        g_area += polygon(tri, alpha=0.40, color=col)
+        g_area += line(tri + [tri[0]], color=col, thickness=2)
+    g_area = ajustar(g_area)
+    # g_area = add_title(g_area, "Área por triangulación")
+
+    # 4) Punto en polígono
+    if es_convexo:
+        g_pp = polygon(pts,
+                       alpha=0.30,
+                       rgbcolor=(0.65, 0.75, 1.00))
+        g_pp += line(pts + [pts[0]],
+                     rgbcolor=(0.10, 0.20, 0.60),
+                     thickness=2.5)
+        g_pp += point([q], size=32, rgbcolor='red')
+        for tri, col, _ in tri_data_pp:
+            g_pp += polygon(tri, alpha=0.40, color=col)
+            g_pp += line([q, tri[0]], color=col, thickness=2)
+            g_pp += line([q, tri[1]], color=col, thickness=2)
+    else:
+        _, (m, M, cont, lados_info) = punto_interior, data_rc
+        g_pp = polygon(pts,
+                       alpha=0.30,
+                       rgbcolor=(0.65, 0.75, 1.00))
+        g_pp += line(pts + [pts[0]],
+                     rgbcolor=(0.10, 0.20, 0.60),
+                     thickness=2.5)
+        g_pp += point([q], size=32, rgbcolor='red')
+        g_pp += point(m, color="blue", size=24)
+        g_pp += point(M, color="blue", size=24)
+        g_pp += line([m, M], linestyle="--", rgbcolor="#666666")
+        g_pp += line([M, q], color='black', linestyle="--", thickness=2)
+        for (a, b, inter) in lados_info:
+            col = 'orange' if inter else 'green'
+            g_pp += line([a, b], color=col, thickness=2.2)
+    g_pp = ajustar(g_pp)
+    # g_pp = add_title(g_pp, "Punto en polígono ({})".format("interior" if punto_interior else "exterior"))
+
+    # 5) Tangentes
+    g_tan = polygon(pts,
+                    alpha=0.25,
+                    rgbcolor=(0.70, 0.80, 1.00))
+    g_tan += line(pts + [pts[0]],
+                  rgbcolor=(0.30, 0.40, 0.90),
+                  thickness=2.5)
+    g_tan += point([q], size=32, rgbcolor='red')
+    if n_h >= 2:
+        g_tan += polygon(hull_pts,
+                         alpha=0.12,
+                         rgbcolor=(0.20, 0.30, 0.70))
+        g_tan += line(hull_pts + [hull_pts[0]],
+                      rgbcolor=(0.10, 0.20, 0.60),
+                      thickness=2)
+    if not dentro_hull:
+        for v, ext in tangentes:
+            g_tan += line([q, ext],
+                          rgbcolor=(0.90, 0.00, 0.90),
+                          thickness=2.8)
+            g_tan += point([v], size=36, rgbcolor=(0.90, 0.00, 0.90))
+    g_tan = ajustar(g_tan)
+    # g_tan = add_title(g_tan, "Tangentes desde el punto")
+
+    paginas_plots = [g_poly, g_conv, g_area, g_pp, g_tan]
+
+    # =====================================================
+    # CREAR PDF 
+    # =====================================================
+
+    pp = PdfPages(filename)
+
+    # --- Página 1: TEXTO ---
+    fig = plt.figure(figsize=(8.27, 11.69))   # A4 vertical
+    ax = fig.add_subplot(111)
+    ax.axis('off')
+
+    fig.text(0.5, 0.92, "Estudio del polígono",
+             ha='center', va='top',
+             fontsize=24, weight='bold')
+    fig.text(0.5, 0.86, nombre_poligono,
+             ha='center', va='top',
+             fontsize=20, color='blue')
+
+    fig.text(0.1, 0.74, "1. Datos de entrada",
+             ha='left', va='top',
+             fontsize=14, weight='bold')
+    fig.text(0.1, 0.71,
+             "· Número de vértices: {}\n"
+             "· Punto de consulta: q = ({:.3f}, {:.3f})"
+             .format(n, float(q[0]), float(q[1])),
+             ha='left', va='top',
+             fontsize=12)
+
+    fig.text(0.1, 0.62, "2. Convexidad del polígono",
+             ha='left', va='top',
+             fontsize=14, weight='bold')
+    fig.text(0.1, 0.59,
+             "· El polígono es {}."
+             .format("CONVEXO" if es_convexo else "NO CONVEXO"),
+             ha='left', va='top',
+             fontsize=12)
+
+    fig.text(0.1, 0.51, "3. Área del polígono",
+             ha='left', va='top',
+             fontsize=14, weight='bold')
+    fig.text(0.1, 0.48,
+             "· Área signada: {:.4f}\n"
+             "· Área geométrica (valor absoluto): {:.4f}"
+             .format(float(area_signed), float(area_abs)),
+             ha='left', va='top',
+             fontsize=12)
+
+    fig.text(0.1, 0.39, "4. Posición del punto respecto al polígono",
+             ha='left', va='top',
+             fontsize=14, weight='bold')
+    fig.text(0.1, 0.36,
+             "· Método utilizado: {}.\n"
+             "· El punto de consulta es {} respecto al polígono."
+             .format(metodo_posicion,
+                     "INTERIOR" if punto_interior else "EXTERIOR"),
+             ha='left', va='top',
+             fontsize=12)
+
+    fig.text(0.1, 0.27, "5. Tangentes desde el punto al polígono",
+             ha='left', va='top',
+             fontsize=14, weight='bold')
+
+    y0 = 0.24
+    fig.text(0.1, y0,
+             "· {}.".format(resumen_tangentes_breve),
+             ha='left', va='top',
+             fontsize=12)
+    y = y0 - 0.04
+
+    if tangentes:
+        for k, ((v, ext), idx_poly) in enumerate(zip(tangentes, t_indices), start=1):
+            if idx_poly is not None:
+                linea = ("  Tangente {}: vértice índice {} "
+                         "con coordenadas ({:.3f}, {:.3f})."
+                         ).format(k, idx_poly,
+                                  float(v[0]), float(v[1]))
+            else:
+                linea = ("  Tangente {}: vértice con coordenadas "
+                         "({:.3f}, {:.3f})."
+                         ).format(k, float(v[0]), float(v[1]))
+            fig.text(0.1, y, linea,
+                     ha='left', va='top',
+                     fontsize=11)
+            y -= 0.03
+
+    pp.savefig(fig)
+    plt.close(fig)
+
+    for g in paginas_plots:
+        fig = g.matplotlib(figsize=(8.27, 11.69))
+        for ax in fig.axes:
+            ax.set_axis_off()
+        pp.savefig(fig)
+        plt.close(fig)
+
+    pp.close()
+
+    pretty_print(html(
+        "<div style='font-size:0.95rem;'>"
+        "Informe PDF completo generado: "
+        f"<b>{filename}</b><br>"
+        "Incluye texto en la primera página y una imagen por página después."
+        "</div>"
+    ))
+
+
+@interact
+def applet_informe_pdf(
+    lista_puntos_str = input_box(
+        "[(0,0),(2,0),(2,1),(0,1)]",
+        label="Lista de vértices (x,y)",
+        type=str
+    ),
+
+    q_str = input_box(
+        "[3,3]",
+        label="Punto q (x,y)",
+        type=str
+    ),
+
+    nombre = input_box(
+        "Polígono sin nombre",
+        label="Nombre del polígono (para el PDF)",
+        type=str
+    ),
+
+    accion = selector(
+        ["Esperando…", "Generar informe PDF"],
+        label="Acción"
+    )
+):
+
+    # “Botón” simulado
+    if accion == "Esperando…":
+        pretty_print(html(
+            "<span style='color:#666;'>"
+            "Selecciona <b>Generar informe PDF</b> cuando estés listo."
+            "</span>"
+        ))
+        return
+
+    # Parseo de entradas
+    try:
+        lista_puntos = sage_eval(lista_puntos_str)
+        q = sage_eval(q_str)
+    except Exception as e:
+        pretty_print(html(
+            f"<span style='color:red;'>Error en la entrada (lista de puntos o q):<br>{e}</span>"
+        ))
+        return
+
+    if len(lista_puntos) < 3:
+        pretty_print(html(
+            "<span style='color:red;'>El polígono debe tener al menos 3 vértices.</span>"
+        ))
+        return
+
+    # Generar PDF
+    try:
+        filename = estudio_pdf_completo(
+            lista_puntos, q,
+            nombre_poligono = nombre
+        )
+    except Exception as e:
+        pretty_print(html(
+            f"<span style='color:red;'>Error al generar PDF:<br>{e}</span>"
+        ))
+        return
+      </script>
+    </div>
+
+  </div>
+</section>
 
       <section>
         <div class="card card--applet">
